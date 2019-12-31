@@ -14,7 +14,7 @@
 		<module>lxjsdk-api</module>
 	</modules>
 	<properties>
-		<spring.version>4.2.0.RELEASE</spring.version>
+		<spring.version>5.2.2.RELEASE</spring.version>
 		<struts.version>2.3.32</struts.version>
 		<hibernate.version>3.6.1.Final</hibernate.version>
 		<ehcache.version>2.3.1</ehcache.version>
