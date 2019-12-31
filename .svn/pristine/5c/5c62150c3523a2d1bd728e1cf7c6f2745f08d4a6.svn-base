@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我们平台的详情</title>
+    <link rel="stylesheet" href="../common/css/reset.css">
+    <style>
+        .applyDetails{
+            box-sizing: border-box;
+            padding: 0 20px;
+        }
+    </style>
+</head>
+<body>
+<div class="applyDetails"  style="">
+    <p class="text_index">1、联享家是一款专为用户提供对讲服务的智能家居软件，能够很方便地为用户提供小区门禁监控画面，实时了解是否有客人来访，可以与来访者进行音视频对讲，并能通过手机进行开门。</p>
+    <p class="text_index">2、联享家是物联技术与互联网结合，采用软硬件配套使用的新一代智能门禁对讲系统，打造智慧社区生活；解决了地产开发商投资成本高、维护难、无法更新等问题；创新性改变了小区物业与住户沟通方式，为小区的物业管理提供了新的管理沟通方式，提高了物业服务水平。</p>
+</div>
+</body>
+</html>

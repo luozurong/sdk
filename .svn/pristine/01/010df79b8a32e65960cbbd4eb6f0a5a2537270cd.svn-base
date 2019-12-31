@@ -1,0 +1,130 @@
+var vue = new Vue({
+    el:"#sdkApply",
+    data:{
+        company: "",
+        appName: "",
+        appPackage: "",
+        picked:"2",
+        userAccount: "",
+        companyFlag: false,
+        appNameFlag: false,
+        appPackageFlag: false,
+        companyFlagWord: "请填入公司名称",
+        appNameFlagWord: "请填入应用名称",
+        appPackageFlagWord: "请填入APP包名",
+        submitFlag:[false,false,false],
+        host: "http://118.190.8.134:8090",
+        token:"",
+        time_stamp: new Date().getTime()
+    },
+    methods:{
+        sdkSubmit:function(){
+            this.companyFunc();
+            this.appNameFunc();
+            this.appPackageFunc();
+            if(this.submitFlag[0] == true && this.submitFlag[1] == true && this.submitFlag[2] == true){
+                this.sdkAjax();
+            }
+        },
+        sdkAjax:function(){      
+            var params={
+                body: {
+                    company: this.company,
+                    appName: this.appName,
+                    appPackage:this.appPackage,
+                    userAccount: this.userAccount,
+                    appType:this.picked
+                },
+                header: {
+                    token: this.token,
+                    time_stamp: this.time_stamp
+                }       
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/addApplication?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+                if(res.body.result == 0){
+                    window.location.href="apply.html";
+                }
+            },function(res){  
+                console.log(res);  
+            });
+        },
+        isLogined:function(){
+            var params = {
+                body:{},
+                header:{
+                    token:this.token,
+                    time_stamp: this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/isLogined?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+               if(res.body.isLogined){
+                    this.userAccount = res.body.userAccount;
+               }else{
+                    window.location.href= this.host+"/lxjsdkH5/index/login.html";
+               }
+            },function(res){  
+                console.log(res);  
+            });
+        },
+        companyFunc:function(){
+            if(this.isCondition(this.company)){
+                this.companyFlag = true;
+                this.submitFlag[0] = false;
+               
+            }else{
+                this.companyFlag = false;
+                this.submitFlag[0] = true;
+            }
+        },
+        appNameFunc:function(){
+            if(this.isCondition(this.appName)){
+                this.appNameFlag = true;
+                this.submitFlag[1] = false;
+               
+            }else{
+                this.appNameFlag = false;
+                this.submitFlag[1] = true;
+            }
+        },
+        appPackageFunc:function(){
+            if(this.isCondition(this.appPackage)){
+                this.appPackageFlag = true;
+                this.submitFlag[2] = false;
+               
+            }else{
+                this.appPackageFlag = false;
+                this.submitFlag[2] = true;
+            }
+        },
+        isCondition:function(param) {
+            if(param == null || param == "" || param == undefined) {
+                return true;
+            }
+            return false;
+        }
+    },
+    mounted:function(){
+        this.isLogined();
+    },
+    watch:{
+        picked:function(newVal,oldVal){
+            console.log(newVal);
+        }
+    }
+});

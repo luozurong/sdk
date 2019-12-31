@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>联享家开放平台</title>
+		<link rel="stylesheet" href="css/login.css">
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="../common/vue/vue.min.js"></script>
+		<script src="../common/vue/vue-resource.min.js"></script>
+	</head>
+	<body>
+		<div id="login">
+			<div class="logo">
+				<img src="../common/img/logo.png" alt="logo">
+				<span>联享家开发平台</span>
+			</div>
+			<div class="login-wrap">
+				<div class="login-pic">
+					<img src="img/appp44.jpg" alt="">
+				</div>
+				<div class="login-content">
+					<div class="login-content-pic">
+						<span>联享家账号登录</span>
+					</div>
+					<div class="login-content-main login-content-top">
+						<p>该账号不存在</p> 
+						<div class="login-content-item">
+							<div class="login-word">
+								<i class="login-word-user"></i>
+								<input type="text" placeholder="请输入登录账号">
+							</div>	
+							<p v-if="userFlag" v-text="userFlagWord">请输入账号</p>
+						</div>
+						<div class="login-content-item">
+							<div class="login-word">
+								<i class="login-word-psw"></i>
+								<input type="text" placeholder="请输入登录密码">
+							</div>
+							<p v-if="pswFlag" v-text="pswFlagWord">请输入密码</p>
+						</div>				
+						
+						<div class="login-submit" @click="loginSubmit()">登录</div>
+					</div>
+					<div class="login-other">
+						<a href="register.html">立即注册</a>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/login.js"></script>
+	</body>
+</html>

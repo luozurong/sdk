@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>联享家开放平台</title>
+		<link rel="stylesheet" href="css/apply.css">
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="../common/vue/vue.min.js"></script>
+		<script src="../common/vue/vue-resource.min.js"></script>
+	</head>
+	<body>
+		<div id="apply" v-cloak>
+			<div class="apply-header">
+				<img src="img/AA.png" alt="">
+				<span class="apply-name" v-text="name"></span>
+				<span class="apply-edit">编辑账户</span>
+			</div>
+			<div class="apply-content">
+				<div class="apply-add">
+					<a href="sdkApply.html">添加应用</a>
+					<a v-if="terraceFlag" href="terraceApply.html">添加平台</a>
+				</div>
+				<div class="apply-nav">
+					<div class="apply-nav-span">
+						<div>
+							<span @click="addApply(1)" :class="{'apply-nav-active':oneStatus}" class="apply-nav-sdk">我的应用</span>
+							<span @click="addApply(2)" :class="{'apply-nav-active':twoStatus}" class="apply-nav-ping">平台</span>
+						</div>
+					</div>
+					<div class="apply-nav-pop">
+						<div class="apply-div-pop">
+							<div class="apply-user" v-if="addApplyNo == 1">
+								<div class="apply-label">
+									<label>
+										<input type="radio" name="status" value="-1" v-model="picked" checked>
+										<span>全部应用</span>
+									</label>
+									<label>
+										<input type="radio" name="status" value="0" v-model="picked">
+										<span>审核中</span>
+									</label>
+									<label>
+										<input type="radio" name="status" value="1" v-model="picked">
+										<span>审核不通过</span>
+									</label>
+									<label>
+										<input type="radio" name="status" value="2" v-model="picked">
+										<span>审核通过</span>
+									</label>
+								</div>
+								<table cellspacing="0">
+									<thead>
+										<tr>
+											<th style="width:200px;">公司名称</th>
+											<th style="width:200px">应用名程</th>
+											<th style="width:200px">App包名</th>
+											<th style="width:100px">状态</th>
+											<th style="width:100px">审核时间</th>
+											<th style="width:100px">创建时间</th>
+											<th style="width:100px">修改时间</th>
+											<th style="width:100px">操作</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr v-for="item in sdkItem">
+											<td style="width:200px;">{{item.company}}</td>
+											<td>{{item.appName}}</td>
+											<td>{{item.appPackage}}</td>
+											<td>{{item.verifyStatus | status}}</td>
+											<td>{{item.verifyTime | time}}</td>
+											<td>{{item.createTime | time}}</td>
+											<td>{{item.updateTime | time}}</td>
+											<td class="sdkDel">删除</td>
+										</tr>
+										<tr v-if="sdkItemNoData">
+											<td colspan="8">没有更多数据</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+							<div class="apply-ping" v-if="addApplyNo == 2">
+								<div class="apply-label">
+									<label>
+										<input type="radio" name="terracestatus" checked>
+										<span>全部</span>
+									</label>
+									<label>
+										<input type="radio" name="terracestatus">
+										<span>审核中</span>
+									</label>
+									<label>
+										<input type="radio" name="terracestatus">
+										<span>审核不通过</span>
+									</label>
+									<label>
+										<input type="radio" name="terracestatus">
+										<span>审核通过</span>
+									</label>
+								</div>
+								<table cellspacing="0">
+									<thead>
+										<tr>
+											<th style="width:200px;padding-left: 10px;">公司名称</th>
+											<th style="width:200px">账号</th>
+											<th style="width:200px">密码</th>
+											<th style="width:100px">时间</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td style="width:300px">合力正通</td>
+											<td style="width:300px">luozurong</td>
+											<td style="width:300px">888888</td>
+											<td style="width:200px">2013-10-23</td>
+										</tr>
+										<tr>
+											<td colspan="4">没有更多数据</td>
+										</tr>
+									</tbody>
+								</table>
+								<a href="terraceApply.html" class="apply-area-add">
+									<img src="img/btn_ic_add@3x.png" alt="">
+									<span>新增接入小区</span>
+								</a>
+								<table cellspacing="0" class="apply-area">
+									<thead>
+										<tr>
+											<th style="width:600px;padding-left: 10px;">小区名称</th>
+											<th style="width:500px">状态</th>
+										</tr>
+									</thead>
+									<tbody>
+										<tr>
+											<td style="width:600px">合力正通</td>
+											<td style="width:500px">luozurong</td>
+										</tr>
+									</tbody>
+								</table>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/apply.js"></script>
+	</body>
+</html>

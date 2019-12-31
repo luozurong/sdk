@@ -1,0 +1,55 @@
+ var vue = new Vue({
+    el: "#terraceApply",
+    data: {
+    	getEstateFlag: true,
+        inputEstateFlag: false,
+        hostUrl: "http://192.168.51.24:8090/lxjsdkApi/getApplicationList?str=",
+    },
+    methods:{
+    	getEstate:function(){
+            var estateFlag = parseInt(sessionStorage.getItem("estateFlag"));
+            if(estateFlag == 1){
+                this.getEstateFlag = true;
+                this.inputEstateFlag = false;
+            }else{
+                this.getEstateFlag = false;
+                this.inputEstateFlag = true;
+            }
+        },
+        addTerrace:function(){
+            console.log("登录成功");
+        },
+        terraceAjax:function(){ //获取平台账号密码
+            var params = {
+                body:{},
+                header:{
+                    token:"00",
+                    time_stamp:this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.hostUrl+paramsStr
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+            }).then(function(res){  
+                console.log(res);
+                this.terraceItem = res.body.list;
+                if(res.body.list.length == 0){
+                    this.terraceItemFlag = true;
+                    this.terraceFlag = true;
+                }else{
+                    this.terraceItemFlag = false;
+                    this.terraceFlag = true;
+                }
+            },function(res){  
+                 
+            });
+        },
+    },
+    mounted:function(){
+        this.getEstate();
+    }
+});

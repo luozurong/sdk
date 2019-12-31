@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>平台账号申请</title>
+		<link rel="stylesheet" href="css/terraceApply.css">
+	</head>
+	<body>
+		<div class="apply-header">
+			<img src="img/AA.png" alt="">
+			<span class="apply-name">小菜鸟开发员</span>
+			<span class="apply-edit">编辑账户</span>
+		</div>
+		<div class="terrace-wrap">
+			<div class="terrace-title">
+				<img src="../common/img/logo.png" alt="">
+				<span>联享家开发平台-平台账号申请</span>
+			</div>
+			<div class="terrace-applay">
+				<div class="terrace-name">
+					<span>公司名称：</span>
+					<input type="text" placeholder="请填入公司名称">
+				</div>
+				<div class="terrace-submit">
+					<span>立即申请</span>
+				</div>
+			</div>
+		</div>
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="js/terraceApply.js"></script>
+	</body>
+</html>

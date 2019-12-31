@@ -1,0 +1,7 @@
+$(function(){
+	$(".apply-nav-span div span").click(function(){
+		$(this).addClass("apply-nav-active").siblings().removeClass("apply-nav-active");
+		var index = $(this).index();
+		$(".apply-div-pop>div").eq(index).show().siblings().hide();
+	});
+});

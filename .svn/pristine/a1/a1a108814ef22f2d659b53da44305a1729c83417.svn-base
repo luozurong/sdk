@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>文档中心</title>
+		<link rel="stylesheet" href="css/docCenter.css">
+		<link rel="stylesheet" href="../common/css/reset.css">
+		<script src="../common/js/jquery-2.1.4.js"></script>
+	</head>
+	<body>
+		<div class="apply-header">
+			<img src="../joint/img/AA.png" alt="">
+			<span class="apply-name">小菜鸟开发员</span>
+			<span class="apply-edit">编辑账户</span>
+		</div>
+		<div class="apply-content">
+			<div class="docCenter-aside">
+				<div class="applay-title">文档中心</div>
+				<div class="docCenter-doc">
+					<div class="docCenter-item">
+						<div>
+							<i class="docCenter-icon"></i>
+							<span>我的平台</span>
+						</div>
+						<ul>
+							<li><a data-val="docCenter6.html">我的平台概况</a></li>
+							<li><a data-val="docCenter7.html">我的平台详情</a></li>
+							<li><a data-val="docCenter8.html">联系我们</a></li>
+						</ul>
+					</div>
+					<div class="docCenter-item">
+						<div>
+							<i class="docCenter-icon"></i>
+							<span>文档</span>
+						</div>
+						<ul>
+							<li><a data-val="docCenter1.html">1.第三方系统接入鉴权流程</a></li>
+							<li><a data-val="docCenter2.html">2.第三方系统接入鉴权接口</a></li>
+							<li><a data-val="docCenter3.html">3.第三方系统同步数据流程</a></li>
+							<li><a data-val="docCenter4.html">4.第三方系统同步数据接口</a></li>
+							<li><a data-val="docCenter5.html">5.联享家平台错误码定义</a></li>
+						</ul>
+					</div>
+					<!--<div class="docCenter-one">-->
+						<!--<a href="javascript:;">联系我们</a>-->
+					<!--</div>-->
+				</div>
+			</div>
+			<div class="docCenter-content">
+				<iframe id="iframeId" src="docCenter1.html" frameborder="0"></iframe>
+			</div>
+		</div>
+		<script src="js/initIframeHeight.js"></script>
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="js/docCenter.js"></script>
+	</body>
+</html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>第三方系统接入鉴权接口</title>
+    <link rel="stylesheet" href="../common/css/reset.css">
+    <style>
+        .text_index{
+            text-indent: 25px;
+            text-align: justify;
+            padding-bottom: 30px;
+            font-size: 16px;
+        }
+        .table_gauge1 tbody tr td{
+            padding:10px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="profile">
+        <div class="text_index " style="font-weight:600;">
+            第三方系统接入鉴权接口
+        </div>
+        <p class="text_index">接口描述：
+            第三方平台携带鉴权账号和密码请求联享家平台进行鉴权操作，鉴权通过则联享家平台响应令牌给第三方系统，第三方系统保存该令牌；该令牌将作为第三方系统与联享家平台交互的凭证，后续同步数据等交互操作均需要带上该令牌，以验证操作的合法性；令牌过期时，则第三方平台需要重新调用接入鉴权流程，以获取最新令牌。
+        </p>
+        <div class="text_index">
+            请求参数说明：
+        </div>
+        <table class="table_gauge" style="font-size: 16px;" width="600" border="1" cellspacing="0" cellpadding="0">
+            <tr>
+                <td>名称</td>
+                <td>类型</td>
+                <td>是否必填</td>
+                <td>说明</td>
+            </tr>
+            <tr>
+                <td>token</td>
+                <td>string</td>
+                <td>否</td>
+                <td>注意：鉴权接口token值为空</td>
+            </tr>
+            <tr>
+                <td>account</td>
+                <td>string</td>
+                <td>是</td>
+                <td>鉴权帐号</td>
+            </tr>
+            <tr>
+                <td>password</td>
+                <td>string</td>
+                <td>是</td>
+                <td>密码</td>
+            </tr>
+        </table>
+        <h4 style="padding-top:20px;" class="text_index">请求示例</h4>
+        <pre style="font-size: 16px;">
+    {
+        "header":{
+        "token":"","time_stamp":"201305144142724"
+            },
+        "body":{
+        " account ":"wer23432",
+        “password”:”123456”
+        }
+    }
+        </pre>
+        <h4 class="text_index">响应参数说明</h4>
+        <table class="table_gauge1" style="font-size: 16px;" width="600" border="1" cellspacing="0" cellpadding="0">
+            <tr>
+                <td style="width: 60px;">名称</td>
+                <td style="width: 60px;">类型</td>
+                <td style="width:75px;">是否必填</td>
+                <td>说明</td>
+            </tr>
+            <tr>
+                <td>result</td>
+                <td>string</td>
+                <td>是</td>
+                <td>请求处理结果当结果为“0”时为正确其它详见错误码定义表</td>
+            </tr>
+            <tr>
+                <td>reason</td>
+                <td>string</td>
+                <td>否</td>
+                <td>错误描述</td>
+            </tr>
+            <tr>
+                <td>token</td>
+                <td>string</td>
+                <td>否</td>
+                <td>鉴权通过，则该值为32位字符串；鉴权不通过，则该值为空字符串</td>
+            </tr>
+        </table>
+        <h4 class="text_index" style="padding-top:20px;">响应请求案例</h4>
+        <pre style="font-size: 16px;">{"result":"0","reason":"",”token”:” 14434225639955790b2d03a44ecfa4d7”}</pre>
+    </div>
+</body>
+</html>

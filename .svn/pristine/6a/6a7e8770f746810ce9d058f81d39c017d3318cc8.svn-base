@@ -1,0 +1,131 @@
+ var vue = new Vue({
+    el: "#terraceApply",
+    data: {
+        company: "",
+        areaCode: "",
+        companyFlag: false,
+        addrFlag:false,
+        areaCodeFlag: false,
+        companyFlagWord: "请填入公司名称",
+        addrFlagWord:"请选择地址",
+        areaCodeFlagWord: "请填入小区",
+    	getEstateFlag: true,
+        inputEstateFlag: false,
+        companySpan: "合力正通测试小区",
+        province:"",
+        city:"",
+        area:"",
+        addrAllFlag:[false,false,false],
+        submitFlag:[false,false],
+        hostUrl: "http://192.168.51.24:8090/lxjsdkApi/getApplicationList?str=",
+    },
+    methods:{
+    	getEstate:function(){
+            this.companySpan = sessionStorage.getItem("company");
+            var estateFlag = parseInt(sessionStorage.getItem("estateFlag"));
+            if(estateFlag == 1){
+                this.getEstateFlag = true;
+                this.inputEstateFlag = false;
+
+            }else{
+                this.getEstateFlag = false;
+                this.inputEstateFlag = true;
+            }
+        },
+        addTerrace:function(){
+            this.companyFunc();
+            this.areaCodeFunc();
+            if(this.submitFlag[0] == true && this.submitFlag[1] == true){
+                console.log("登录成功");
+                //this.terraceAjax();
+            }
+        },
+        terraceAjax:function(){ //获取平台账号密码
+            var params = {
+                body:{},
+                header:{
+                    token:"00",
+                    time_stamp:this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.hostUrl+paramsStr
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+            }).then(function(res){  
+                console.log(res);
+                this.terraceItem = res.body.list;
+                if(res.body.list.length == 0){
+                    this.terraceItemFlag = true;
+                    this.terraceFlag = true;
+                }else{
+                    this.terraceItemFlag = false;
+                    this.terraceFlag = true;
+                }
+            },function(res){  
+                 
+            });
+        },
+        companyFunc:function(){
+            if(this.isCondition(this.company)){
+                this.companyFlag = true;
+                this.submitFlag[0] = false;
+            }else{
+                this.companyFlag = false;
+                this.submitFlag[0] = true;
+            }
+        },
+        areaCodeFunc:function(){
+            if(this.isCondition(this.areaCode)){
+                this.areaCodeFlag = true;
+                this.submitFlag[1] = false;
+            }else{
+                this.areaCodeFlag = false;
+                this.submitFlag[1] = true;
+            }
+        },
+        isCondition:function(param) {
+            if(param == null || param == "" || param == undefined) {
+                return true;
+            }
+            return false;
+        }
+    },
+    mounted:function(){
+        this.getEstate();
+        if(this.getEstateFlag){
+            this.company = this.companySpan;
+        }
+    },
+    watch:{
+        province:function(newVal,oldVal){
+            console.log(this.province);
+            if(this.isCondition(this.province)){
+                this.addrAllFlag[0] = false;
+            }else{
+                 this.addrAllFlag[0] = true;
+            }
+        },
+        city:function(newVal,oldVal){
+            console.log(this.city);
+            if(this.isCondition(this.city)){
+                this.addrAllFlag[1] = false;
+            }else{
+                 this.addrAllFlag[1] = true;
+            }
+        },
+        area:function(newVal,oldVal){
+            console.log(this.area);
+            if(this.isCondition(this.area)){
+                this.addrAllFlag[2] = false;
+
+            }else{
+                this.addrAllFlag[2] = true;
+                console.log(this.province+this.city+this.area);
+            }
+        }
+    }
+});

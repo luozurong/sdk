@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="../common/css/reset.css">
+    <title>第三方系统同步数据流程</title>
+</head>
+<body>
+<div class="profile">
+    <h4 class=" headline_h2 normal_index">第三方系统同步数据流程</h4>
+    <div>
+        <img style="padding-left:140px;width:70%;" src="img/xngxing.png" alt=""/>
+    </div>
+</div>
+</body>
+</html>

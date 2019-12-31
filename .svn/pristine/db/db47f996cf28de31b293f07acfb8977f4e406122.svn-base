@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>联享家开发平台</title>
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<link rel="stylesheet" href="css/index.css">
+	</head>
+	<body>
+		<div class="index-link">
+			<div>
+				<div class="logo">
+					<img src="" alt="">
+					<span>联享家开发平台</span>
+				</div>
+				<div class="index-nav">
+					<div class="index-nav-login">
+						<a class="login" href="">登录</a>
+						<span>|</span> 
+						<a class="register" href="">注册</a>
+					</div>
+					<div class="index-nav-warp">
+						<a href="">文档</a>	
+						<a href="">联系我们</a>
+					</div>
+					
+				</div>
+			</div>
+			
+		</div>
+		
+	</body>
+</html>

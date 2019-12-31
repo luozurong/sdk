@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>联系我们</title>
+    <link rel="stylesheet" href="../common/css/reset.css">
+</head>
+<body>
+<div class="profile">
+    <div class="text_index normal_index">
+        智能门禁管理系统对于小区来说用处是非常大的，而且联享家更是具有多种优势，是新型小区改革的首选。
+    </div>
+    <div class="text_index normal_index" style="float: left">
+        <div>联享家官网服务热线:400-8822-25&nbsp;或 &nbsp;添加联享家微信客服二维码</div>
+    </div>
+    <img style="float: left;padding-left:20px;" src="img/weixin2.jpg" alt=""/>
+
+</div>
+
+</body>
+</html>

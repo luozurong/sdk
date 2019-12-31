@@ -1,0 +1,210 @@
+var vue = new Vue({
+    el: '#apply',
+    data: {
+        userAccount: "",
+        addApplyNo: 1,
+        picked: "-1",
+        sdkItem: "",
+        sdkItemNoData: false,
+        company:"",
+        joinAccount:"",
+        joinPassword:"",
+        createTime:"",
+        verifyStatus: "",
+        terraceItem: "",
+        terraceAreaItem: "",
+        terraceItemFlag:false,
+        oneStatus: true,
+        twoStatus: false,
+        terraceFlag: false,
+        addAreaFlag: false,
+        hostUrl: "http://192.168.51.24:8090/lxjsdkApi/getApplicationList?str=",
+        hostUrlDel: "http://192.168.51.24:8090/lxjsdkApi/delApplication?str=",
+        hostUrlTerrace: "http://192.168.51.24:8090/lxjsdkApi/getPlatFormList?str=",
+        time_stamp: new Date().getTime(),
+        token: "",
+
+    },
+    methods:{
+    	addApply:function(num){ //tab切换
+    		this.addApplyNo = num;
+    		if(num == 1){
+    			this.oneStatus = true;
+    			this.twoStatus = false;
+    		}else{
+    			this.oneStatus = false;
+    			this.twoStatus = true;
+    		}
+    	},
+    	sdkAjax:function(pickedNum){ //我的应用列表
+    		var params = {
+    			body:{
+					verifyStatus: this.picked,
+                    userAccount:this.userAccount
+    			},
+    			header:{
+    				token:this.token,
+    				time_stamp:this.time_stamp
+    			}
+    		}
+    		var paramsStr = encodeURI(JSON.stringify(params));
+    		var httpURL = this.hostUrl+paramsStr
+    		this.$http.jsonp(httpURL,{
+			    emulateJSON: true,
+				method: "get",
+				dataType: "jsonp",
+				jsonp: "jsoncallback",
+			}).then(function(res){  
+            	var data = res.body;
+            	this.sdkItem = data.list;
+            	if(data.list.length == 0){
+            		this.sdkItemNoData = true;
+            	}else{
+            		this.sdkItemNoData = false;
+            	}  
+            },function(res){  
+                console.log(res);  
+            });  
+    	},
+        delAjax:function(index){ //删除我的应用
+            var id = this.sdkItem[index].id;
+            var params = {
+                body:{
+                    id: id
+                },
+                header:{
+                    token:this.token,
+                    time_stamp:this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.hostUrlDel+paramsStr
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+            }).then(function(res){  
+                if(res.body.result == 0){
+                    Vue.delete(this.sdkItem,index);
+                }
+            },function(res){  
+                 
+            });         
+        },
+        terraceAjax:function(){ //获取平台账号密码
+            var params = {
+                body:{
+                    userAccount: this.userAccount
+                },
+                header:{
+                    token:this.token,
+                    time_stamp:this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.hostUrlTerrace+paramsStr
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+            }).then(function(res){  
+                console.log(res);
+                this.terraceItem = res.body.platFormJoinList;
+                if(res.body.isRegisted == 1){
+                    this.terraceFlag = false;
+                    this.addAreaFlag = true;
+                }else{
+                    this.terraceFlag = true;
+                    this.addAreaFlag = false;
+                } 
+                if(res.body.platFormJoinList.length != 0){
+                    this.terraceItemFlag = false;
+                    var terraceItemIndex = 0;
+
+                    for(var i = 0;i < this.terraceItem.length; i++){
+                        if(parseInt(this.terraceItem[i].verifyStatus) == 2){
+                            //terraceItemIndex == i;
+                            if(res.body.isRegisted == 1){
+                                this.terraceFlag = false;
+                                this.addAreaFlag = true;
+                                if(res.body.platFormJoinList[i].verifyStatus == 2){
+                                    this.terraceAreaItem = this.terraceItem[i].platFormJoinAreaList;
+                                }
+                            }else{
+                                this.terraceFlag = true;
+                                this.addAreaFlag = false;
+                            } 
+                        }else{
+                            console.log(1);
+                        }
+                    }
+                     
+                }else{
+                     this.terraceItemFlag = true;
+                }             
+            },function(res){  
+                 
+            });
+        },
+        addEstate:function(){ //添加小区
+            sessionStorage.setItem("estateFlag",1);
+            sessionStorage.setItem("inputEstateFlag",0);
+            sessionStorage.setItem("company","广州合力正通");
+        },
+        inputEstate:function(){
+             sessionStorage.setItem("inputEstateFlag",1);
+             sessionStorage.setItem("estateFlag",0);
+        },
+        isCondition:function(param) {
+            if(param == null || param == "" || param == undefined) {
+                return true;
+            }
+            return false;
+        },
+        GetURLParameter: function (name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if(r != null) return unescape(r[2]);
+            return null;
+        }
+       
+    },
+    mounted:function(){	
+        this.token =  this.GetURLParameter("token");
+        console.log(this.token);
+        this.userAccount = sessionStorage.getItem("userAccount");
+        this.sdkAjax(this.pickedNum);
+        this.terraceAjax();
+    },
+    watch:{
+    	picked:function(newValue,oldValue){
+    		this.sdkAjax(newValue);
+    	}
+    },
+    filters: {
+        status: function (value) {
+            if (!value) return '';
+            if(value == 0){
+                value = "审核中";
+            }else if(value == 1){
+                value = "未通过";
+            }else if(value == 2){
+                value = "通过";
+            }
+            return value;
+        },
+        time: function(value){
+            if (!value) return '';
+              var da = value;
+              da = new Date(da);
+              var year = da.getFullYear();
+              var month = da.getMonth()+1;
+              var date = da.getDate();
+              var value = [year,month,date].join('-');
+              return value;
+        }
+    }
+    
+})

@@ -1,0 +1,152 @@
+ 
+var vue = new Vue({
+    el: "#content",
+    data: {
+        mobile:"",
+        code: "",
+        userAccountFlag:false,
+        codeFlag:false,
+        sendFlag:false,
+        userAccountFlagWord:"请输入正确手机号",
+        codeFlagWord:"验证码不正确",
+        time: "120",
+        sendAginFlag: false,
+        sendCodeFlag:true,
+        sendClass: false,
+        sureSubmit: false,
+        token:"",
+        time_stamp:new Date().getTime(),
+        host: "http://118.190.8.134:8090",
+        locationHost:"http://118.190.8.134:8090",
+        /*host: "http://192.168.51.24:8090",
+        locationHost:"http://192.168.51.33:8090",*/
+    },
+    methods:{
+    	sendCode:function(){
+            this.userAccountFunc();
+            if(!this.userAccountFlag){
+                this.time = 120;
+                this.sendAginFlag = true;
+                this.sendCodeFlag = false;
+                if(this.sendFlag){
+                     console.log("发送验证码成功");
+                     this.sendAjax();
+                }else{
+                     console.log("发送验证码失败");
+                } 
+            }  
+    	},
+        retrieveSubmit:function(){
+            this.userAccountFunc();
+            this.codeFunc();
+            if(this.sureSubmit){
+                console.log("找回密码了");
+                this.retrieveAjax();
+            }else{
+                console.log("sb");
+            }
+        },
+        retrieveAjax:function(){
+            var params = {
+                body:{
+                    code:this.code,
+                    userAccount:this.userAccount
+                },
+                header:{
+                    token:this.token,
+                    time_stamp: this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/getNewPassword?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+                console.log(res);
+            },function(res){  
+                console.log(res);  
+            });
+        },
+        sendAjax:function(){
+            var params = {
+                body:{
+                    userAccount:this.userAccount
+                },
+                header:{
+                    token:this.token,
+                    time_stamp: this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/getMessageCode?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+                console.log(res);
+            },function(res){  
+                console.log(res);  
+            });
+        },
+        userAccountFunc: function(){
+            if(this.isCondition(this.mobile) || /^[0-9]{11,11}$/.test(this.mobile) == false){
+                this.userAccountFlag = true;  
+                this.sendFlag = false;     
+            }else{
+                this.userAccountFlag = false;
+                this.sendFlag = true;
+            }
+        },
+        codeFunc: function(){
+            if(this.isCondition(this.code)){
+                this.codeFlag = true;    
+            }else{
+                this.codeFlag = false;
+            }
+        },
+    	isCondition:function(param) {
+			if(param == null || param == "" || param == undefined) {
+				return true;
+			}
+			return false;
+		}
+    },
+    mounted:function(){
+
+    },
+    watch:{
+        time:function(newVal,oldVal){
+            setTimeout(function(){
+                if(vue.time >1){
+                   vue.time -= 1;  
+                }else{
+                   vue.sendAginFlag = false; 
+                   vue.sendCodeFlag = true;
+                }
+            },1000);
+        },
+        mobile:function(newVal,oldVal){
+            if(!this.isCondition(newVal)){
+                this.sendClass = true;
+                console.log(1);
+            }else{
+                this.sendClass = false;
+                console.log(2);
+            }
+        },
+        code:function(newVal,oldVal){
+            if(!this.isCondition(newVal)){
+                this.sureSubmit = true;
+            }else{
+                this.sureSubmit = false;
+            }
+        }
+    }   
+});

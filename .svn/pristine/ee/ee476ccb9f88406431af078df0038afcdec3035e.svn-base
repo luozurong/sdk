@@ -1,0 +1,54 @@
+package com.hori.ctms.test;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.junit.Before;
+import org.junit.Test;
+
+import com.hori.ctms.util.MessageSendTestUtil;
+
+import net.sf.json.JSONObject;
+
+/**
+ * 客户端接口测试类
+ * @author laizs
+ * @time 2017年8月7日下午7:07:48
+ *
+ */
+public class UserApiTest {
+	// token
+	String token = "test";
+	// 时间戳
+	String time_stamp = null;
+	SimpleDateFormat sf = new SimpleDateFormat("yyyyMMDDHHmmss");
+
+	@Before
+	public void before() {
+		time_stamp = sf.format(new Date());
+	}
+	
+	@Test
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public  void getUserInfo(){
+		//请求路径
+		String servletURL = new String("http://127.0.0.1:8090/ctmsApi/user/getUserInfo");
+		MessageSendTestUtil messageInteractive = new MessageSendTestUtil(servletURL);
+		Map header=new HashMap();
+		header.put("token", "00000000000000000000000000000000");
+		header.put("time_stamp", time_stamp);
+		Map body=new HashMap();
+		//参数
+		body.put("name", "赖兆世");//销售员账号
+		Map data=new HashMap();
+		data.put("header", header);
+		data.put("body", body);
+		String content=JSONObject.fromObject(data).toString();
+		System.out.println(content);
+		String backResult = messageInteractive.sendMessageReq(content);
+		MessageSendTestUtil.printInfo("服务端响应的数据：" + backResult);
+	}
+	
+}

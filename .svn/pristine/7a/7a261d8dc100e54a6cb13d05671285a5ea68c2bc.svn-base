@@ -1,0 +1,37 @@
+
+	$(".docCenter-item>div").click(function(){
+		if($(this).next().css("display") == "none"){
+			$(this).next().show();
+			$(this).find("i").addClass("docCenter-icon-active");
+		}else{
+			$(this).find("i").removeClass("docCenter-icon-active");
+			$(this).next().hide();
+		}
+	})
+	$(".docCenter-item ul li a").click(function(){
+		var dataVal = $(this).attr("data-val");
+		console.log(dataVal);
+		$("#iframeId").attr("src",dataVal);
+		window.onresize=function(){  
+		     changeFrameHeight();  
+		}
+	});
+	function changeFrameHeight(){
+	    var ifm= document.getElementById("iframeId"); 
+	    ifm.height=document.documentElement.clientHeight;
+	}
+
+	window.onresize=function(){  
+	     changeFrameHeight();
+	}
+	var iframeId=GetURLParameter("iframeId");
+	if(iframeId != null && iframeId != "" && iframeId != undefined){
+		$("#iframeId").attr("src",iframeId);
+	}
+
+	function GetURLParameter(name) {
+		var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+		var r = window.location.search.substr(1).match(reg);
+		if(r != null) return unescape(r[2]);
+		return null;
+	}

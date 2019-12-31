@@ -1,0 +1,86 @@
+ 
+var vue = new Vue({
+    el: "#indexWrap",
+    data: {
+    	loginBeforeFlag: true,
+        loginAfterFlag: false,
+        sesstionUser:"",
+        token:"",
+        time_stamp:new Date().getTime(),
+        host: "http://118.190.8.134:8090"
+    },
+    methods:{
+    	noLogin:function(){
+            var params = {
+                body:{},
+                header:{
+                    token:this.token,
+                    time_stamp: this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/logout?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+                sessionStorage.setItem("userStorage","");
+                this.loginBeforeFlag = true;
+                this.loginAfterFlag = false;
+                console.log(res);
+            },function(res){  
+                console.log(res);  
+            });
+    	},
+        isLogined:function(){
+            var params = {
+                body:{},
+                header:{
+                    token:this.token,
+                    time_stamp: this.time_stamp
+                }
+            }
+            var paramsStr = encodeURI(JSON.stringify(params));
+            var httpURL = this.host+"/lxjsdkApi/isLogined?str="+paramsStr;
+            this.$http.jsonp(httpURL,{
+                emulateJSON: true,
+                method: "get",
+                dataType: "jsonp",
+                jsonp: "jsoncallback",
+                contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+            }).then(function(res){  
+                console.log(res);
+                if(res.body.isLogined){
+                   this.sesstionUser = res.body.userAccount; 
+                   this.loginBeforeFlag = false;
+                   this.loginAfterFlag = true;
+                }else{
+                    this.loginBeforeFlag = true;
+                   this.loginAfterFlag = false;
+                }
+            },function(res){  
+                console.log(res);  
+            });
+        },
+    	isCondition:function(param) {
+			if(param == null || param == "" || param == undefined) {
+				return true;
+			}
+			return false;
+		}
+    },
+    created:function(){
+        this.isLogined();
+    },
+    mounted:function(){
+    	var mySwiper = new Swiper ('.swiper-container', {
+		    loop: true,  
+		    autoplay: 3000,
+		    pagination: '.swiper-pagination'
+		}); 
+		
+    }   
+});

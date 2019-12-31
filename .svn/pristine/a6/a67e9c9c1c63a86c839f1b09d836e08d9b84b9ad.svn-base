@@ -1,0 +1,5 @@
+var host = "http://118.190.8.134:8090";
+var locationHost = "http://118.190.8.134:8090";
+
+/*var host = "http://192.168.51.24:8090";
+var locationHost = "http://192.168.51.33:8090";*/

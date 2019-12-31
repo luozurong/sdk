@@ -1,0 +1,223 @@
+package com.hori.lxjsdk.controller;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
+import com.hori.lxjsdk.enums.ServletRspErrorCode;
+import com.hori.lxjsdk.message.HttpApiMessageReq;
+import com.hori.lxjsdk.message.HttpApiUtil;
+import com.hori.lxjsdk.message.ServletMessageCommon;
+import com.hori.lxjsdk.message.TokenInfo;
+import com.hori.lxjsdk.util.DateUtil;
+import com.jlit.model.vo.UserVO;
+import com.jlit.uums.webservice.IUserService;
+import net.sf.json.JSONObject;
+/**
+ * 用户信息接口controller
+ * @author laizs
+ * @time 2017年8月5日下午11:33:29
+ *
+ */
+@Controller
+@RequestMapping("/user")
+public class UserController {
+	private static final Logger log=LoggerFactory.getLogger(UserController.class);
+	@Autowired
+	private IUserService userService;
+	/**
+	 * 获取用户信息接口
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/getUserInfo")
+	@ResponseBody
+	public String getUserInfo(HttpServletRequest request,HttpServletResponse response){
+		String result = ServletRspErrorCode.MESSAGE_RSP_SUCCESS;
+		String reason = "";
+		//参数-订单提交时间，开始时间，格式yyyy-MM-dd
+		String startDate="";
+		//参数-订单提交时间，结束时间，格式yyyy-MM-dd
+		String endDate="";
+	    //参数-药店id(type为1（申请开处方）时生效)
+	    String drugstoreId="";
+	    //参数-医院/门诊id(type为3（协助开处方）时生效)
+	    String hospitalId="";
+		Date queryStartDate=null;
+		Date queryEndDate=null;
+		//程序完成标志
+		boolean endFlag=false;
+		String token = "";
+		//token验证结果信息
+		TokenInfo tokenInfo=null;
+		//结果的数据列表
+		LinkedList resultList=new LinkedList();
+		//响应的结果
+		Map resultMap=new HashMap<String,String>();
+		//html5回调参数
+		String callbackName = null;		
+		//########################判断参数格式是否正确
+		try{
+			String reqStr = HttpApiUtil.praseRequst(request);
+			//客户端请求JSON串
+			if(StringUtils.isBlank(reqStr)){
+				 //如果从request的inputStream中获取不到数据，则获取getParameter的数据，以便支持html5的请求数据
+				 callbackName = request.getParameter("jsoncallback");
+				 reqStr = request.getParameter("str");
+			}
+			log.info("reqStr:"+reqStr);
+			HttpApiMessageReq smr = new HttpApiMessageReq(reqStr);
+			drugstoreId=(String) smr.getBody().get("drugstoreId");
+			startDate = (String) smr.getBody().get("startDate");
+			endDate = (String) smr.getBody().get("endDate");
+			hospitalId=(String) smr.getBody().get("hospitalId");
+			token=smr.getToken();
+			if(StringUtils.isNotBlank(startDate)){
+				queryStartDate=DateUtil.praseStringToDate(startDate, "yyy-MM-dd");
+			}
+			if(StringUtils.isNotBlank(endDate)){
+				queryEndDate=DateUtil.praseStringToDate(endDate, "yyy-MM-dd");
+				queryEndDate=DateUtil.getDayEndTime(queryEndDate);//结束时间最后一秒
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			result = ServletRspErrorCode.MESSAGE_FORMAT_ERROR_CODE;
+			reason = ServletRspErrorCode.MESSAGE_FORMAT_ERROR_CONTENT;
+			endFlag=true;
+		}
+		//########################判断token是否异常
+		if(!endFlag){
+			try {
+				//验证token
+				tokenInfo=ServletMessageCommon.validateToken(token);
+				if(-1==tokenInfo.getValidateResult()){
+					throw new Exception("Token("+token+")已经过期");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				//令牌对应账号为空
+				result = ServletRspErrorCode.MESSAGE_TOKEN_VALIDATE_ERROR_CODE;
+				reason = ServletRspErrorCode.MESSAGE_TOKEN_VALIDATE_ERROR_CONTENT;
+				endFlag=true;
+			}
+		}
+		//#############################业务逻辑处理
+		if(!endFlag){
+			try {
+				log.info("用户账号："+tokenInfo.getAccount());
+				
+			} catch (Exception e) {//服务器异常
+				e.printStackTrace();
+				result = ServletRspErrorCode.MESSAGE_SERVICE_RESPONSE_ERROR_CODE;
+				reason = ServletRspErrorCode.MESSAGE_SERVICE_RESPONSE_ERROR_CONTENT;
+			}
+		}
+		
+		//消息响应
+		resultMap.put("result", result);
+		resultMap.put("reason", reason);
+		resultMap.put("list", resultList);//数据列表
+		String rspData=null;
+		//html5回调
+		if(StringUtils.isNotBlank(callbackName)){
+			rspData = callbackName+"("+JSONObject.fromObject(resultMap).toString()+")"; 			
+		}else{
+			rspData=JSONObject.fromObject(resultMap).toString();
+		}
+		log.info("接口响应：{}",rspData);
+		return rspData;
+	}
+	/**
+	 * 修改用户信息
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	@RequestMapping("/updateUserInfo")
+	@ResponseBody
+	public String updateUserInfo(HttpServletRequest request,HttpServletResponse response){
+		String result = ServletRspErrorCode.MESSAGE_RSP_SUCCESS;
+		String reason = "";
+		//程序完成标志
+		boolean endFlag=false;
+		String token = "";
+		//token验证结果信息
+		TokenInfo tokenInfo=null;
+		//响应的结果
+		Map resultMap=new HashMap<String,String>();
+		//html5回调参数
+		String callbackName = null;		
+		//########################判断参数格式是否正确
+		try{
+			String reqStr = HttpApiUtil.praseRequst(request);
+			//客户端请求JSON串
+			if(StringUtils.isBlank(reqStr)){
+				 //如果从request的inputStream中获取不到数据，则获取getParameter的数据，以便支持html5的请求数据
+				 callbackName = request.getParameter("jsoncallback");
+				 reqStr = request.getParameter("str");
+			}
+			log.info("reqStr:"+reqStr);
+			HttpApiMessageReq smr = new HttpApiMessageReq(reqStr);
+			token=smr.getToken();
+		}catch (Exception e) {
+			e.printStackTrace();
+			result = ServletRspErrorCode.MESSAGE_FORMAT_ERROR_CODE;
+			reason = ServletRspErrorCode.MESSAGE_FORMAT_ERROR_CONTENT;
+			endFlag=true;
+		}
+		//########################判断token是否异常
+		//########################判断token是否异常
+		if(!endFlag){
+			try {
+				//验证token
+				tokenInfo=ServletMessageCommon.validateToken(token);
+				if(-1==tokenInfo.getValidateResult()){
+					throw new Exception("Token("+token+")已经过期");
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+				//令牌对应账号为空
+				result = ServletRspErrorCode.MESSAGE_TOKEN_VALIDATE_ERROR_CODE;
+				reason = ServletRspErrorCode.MESSAGE_TOKEN_VALIDATE_ERROR_CONTENT;
+				endFlag=true;
+			}
+		}
+		//#############################业务逻辑处理
+		if(!endFlag){
+			try {
+				log.info("用户账号："+tokenInfo.getAccount());
+				
+			} catch (Exception e) {//服务器异常
+				e.printStackTrace();
+				result = ServletRspErrorCode.MESSAGE_SERVICE_RESPONSE_ERROR_CODE;
+				reason = ServletRspErrorCode.MESSAGE_SERVICE_RESPONSE_ERROR_CONTENT;
+			}
+		}
+		
+		//消息响应
+		resultMap.put("result", result);
+		resultMap.put("reason", reason);
+		String rspData=null;
+		//html5回调
+		if(StringUtils.isNotBlank(callbackName)){
+			rspData = callbackName+"("+JSONObject.fromObject(resultMap).toString()+")"; 			
+		}else{
+			rspData=JSONObject.fromObject(resultMap).toString();
+		}
+		log.info("接口响应：{}",rspData);
+		return rspData;
+	}
+}

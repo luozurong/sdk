@@ -1,0 +1,1008 @@
+package com.hori.lxjsdk.action;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.convention.annotation.Action;
+import org.apache.struts2.convention.annotation.Namespace;
+import org.apache.struts2.convention.annotation.Result;
+
+import com.hori.lxjsdk.model.ActivityInfo;
+import com.hori.lxjsdk.model.ActivityOptions;
+import com.hori.lxjsdk.model.BacklogEvent;
+import com.hori.lxjsdk.model.UserActivityRecord;
+import com.hori.lxjsdk.service.ActivityAreaService;
+import com.hori.lxjsdk.service.ActivityCommodityService;
+import com.hori.lxjsdk.service.ActivityInfoService;
+import com.hori.lxjsdk.service.ActivityManageService;
+import com.hori.lxjsdk.service.ActivityOptionsService;
+import com.hori.lxjsdk.service.BacklogEventService;
+import com.hori.lxjsdk.service.CommunityService;
+import com.hori.lxjsdk.utils.AjaxJsonAndXmlUtil;
+import com.hori.lxjsdk.utils.ExportexcelWithSimpleCall;
+import com.hori.lxjsdk.utils.ExportexcelWithSimpleCall.RowCallBack;
+import com.hori.lxjsdk.utils.FileUtil;
+import com.hori.lxjsdk.utils.HttpClientUtil;
+import com.hori.lxjsdk.utils.StaticValue;
+import com.hori.lxjsdk.web.queryBean.ActivityOptionsQueryBean;
+import com.hori.lxjsdk.web.queryBean.ActivityQueryBean;
+import com.hori.lxjsdk.web.queryBean.CommunityQueryBean;
+import com.hori.lxjsdk.web.vo.ActivityOptionsVo;
+import com.hori.lxjsdk.web.vo.ActivityVo;
+import com.hori.vdcs.model.Area;
+import com.jlit.chims.webservice.IProCityAreaTownService;
+import com.jlit.cms.webservice.IAreaManageService;
+import com.jlit.db.support.Page;
+import com.jlit.db.support.PageModel;
+import com.jlit.hibernate.UUIDGeneratorUtil;
+import com.jlit.mms.webservice.ICommodityService;
+import com.jlit.model.ProCityAreaTown;
+import com.jlit.model.vo.CommodityVo;
+import com.jlit.webservice.queryBean.CommodityServiceQueryBean;
+import com.jlit.webservice.queryBean.cms.AreaManageQueryBean;
+
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
+
+/**
+ * @author lishen
+ *
+ */
+@Action(value = "activityAction")
+@Namespace("/activity")  //定义一个命名空间，表示活动模块内容
+public class ActivityAction extends BaseAction{
+    
+	@Resource(name="activityInfoService")
+	private ActivityInfoService activityInfoService;
+	
+	@Resource
+	private ActivityAreaService activityAreaService; 
+	
+	@Resource
+	private ActivityCommodityService activityCommodityService;
+	
+	@Resource
+	private CommunityService communityService;
+	
+	@Resource
+	private ICommodityService iCommodityService;    //查询商品的webservice接口
+	
+	@Resource
+	private BacklogEventService backlogEventService;
+	
+	@Resource
+	private ActivityOptionsService activityOptionsService;
+	
+	private CommunityQueryBean communityQueryBean;  //圈子的查询bean
+	
+	private CommodityServiceQueryBean commodityQueryBean;  //商品的查询bean
+	
+	private ActivityQueryBean queryBean;   //活动的查询bean
+	
+	private ActivityOptionsQueryBean optionsQueryBean;//选项管理的分页
+	
+	private ActivityInfo activityInfo;
+	
+	private File file;//上传活动图片文件
+	
+	private String fileFileName;//文件名称,struts框架会自动根据文件赋值
+	
+	private String fmsServerUrl = StaticValue.FMS_SERVER_URL;//fms服务器路径
+	
+	private List<ProCityAreaTown> citys;
+	
+	private List<ProCityAreaTown> areas;
+	
+	private List<ProCityAreaTown> provinces;
+	
+	@Resource
+	private IProCityAreaTownService iProCityAreaTownService;
+	
+	@Resource
+	private IAreaManageService iAreaManageService;
+	
+	private AreaManageQueryBean areaManageQueryBean;
+	
+	@Resource(name="activityManageService")
+	private ActivityManageService activityManageService;
+	
+	public ActivityQueryBean getQueryBean() {
+		return queryBean;
+	}
+
+	public void setQueryBean(ActivityQueryBean queryBean) {
+		this.queryBean = queryBean;
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public void setFile(File file) {
+		this.file = file;
+	}
+
+	public String getFileFileName() {
+		return fileFileName;
+	}
+
+	public void setFileFileName(String fileFileName) {
+		this.fileFileName = fileFileName;
+	}
+
+	public String getFmsServerUrl() {
+		return fmsServerUrl;
+	}
+
+	public void setFmsServerUrl(String fmsServerUrl) {
+		this.fmsServerUrl = fmsServerUrl;
+	}
+
+	public CommunityQueryBean getCommunityQueryBean() {
+		return communityQueryBean;
+	}
+
+	public void setCommunityQueryBean(CommunityQueryBean communityQueryBean) {
+		this.communityQueryBean = communityQueryBean;
+	}
+	public ActivityOptionsQueryBean getOptionsQueryBean() {
+		return optionsQueryBean;
+	}
+
+	public void setOptionsQueryBean(ActivityOptionsQueryBean optionsQueryBean) {
+		this.optionsQueryBean = optionsQueryBean;
+	}
+	public List<ProCityAreaTown> getCitys() {
+		return citys;
+	}
+
+	public void setCitys(List<ProCityAreaTown> citys) {
+		this.citys = citys;
+	}
+
+	public List<ProCityAreaTown> getAreas() {
+		return areas;
+	}
+
+	public void setAreas(List<ProCityAreaTown> areas) {
+		this.areas = areas;
+	}
+
+	public List<ProCityAreaTown> getProvinces() {
+		return provinces;
+	}
+
+	public void setProvinces(List<ProCityAreaTown> provinces) {
+		this.provinces = provinces;
+	}
+
+	public AreaManageQueryBean getAreaManageQueryBean() {
+		return areaManageQueryBean;
+	}
+
+	public void setAreaManageQueryBean(AreaManageQueryBean areaManageQueryBean) {
+		this.areaManageQueryBean = areaManageQueryBean;
+	}
+
+	public CommodityServiceQueryBean getCommodityQueryBean() {
+		return commodityQueryBean;
+	}
+
+	public void setCommodityQueryBean(CommodityServiceQueryBean commodityQueryBean) {
+		this.commodityQueryBean = commodityQueryBean;
+	}
+
+	public ActivityInfo getActivityInfo() {
+		return activityInfo;
+	}
+
+	public void setActivityInfo(ActivityInfo activityInfo) {
+		this.activityInfo = activityInfo;
+	}
+
+	/**
+	 * 活动列表
+	 * @return
+	 */
+	@Action(value="activityList",results={@Result(name = "success", location = "/WEB-INF/pages/activity/activityList.jsp")})
+	public String activityList(){
+		if(queryBean==null){
+			queryBean = new ActivityQueryBean();
+		}
+		Page page = this.activityInfoService.list(queryBean);
+		List<ActivityVo> dateList =(List<ActivityVo>)page.getData();
+		//更新启用状态
+		if(dateList != null){
+			for(ActivityVo vo : dateList){
+				if(vo.getCategory() == 2){//票选活动才进来
+					//如果是审批中，判断是编辑审批还是选项编辑审批
+					if(vo.getCheckStatus()<3){
+						BacklogEvent ble = activityManageService.getApprovalActivity(vo.getActivityId(), 0);
+						if(ble != null && ble.getType() == 0){ //禁用(编辑审批中)
+							vo.setCheckStatus(ble.getState());
+						}else if(ble != null && ble.getType() == 3){ //禁用(选项管理审批中)
+							vo.setCheckStatus(5);
+						}
+					}else if(vo.getCheckStatus() == 4){
+						//如果是审批不通过，判断是编辑审批还是选项编辑审批
+						BacklogEvent ble = activityManageService.getApprovalActivity(vo.getActivityId(), 1);
+						if(ble != null && ble.getType() == 0){ //禁用(编辑审批不通过)
+							vo.setCheckStatus(4);
+						}else if(ble != null && ble.getType() == 3){ //禁用(选项管理审批不通过)
+							vo.setCheckStatus(6);
+						}
+					}
+				}
+			}
+		}
+		
+		PageModel pageModel =new PageModel(queryBean.getPageSize(), page.getTotalCount(), queryBean.getPageNumber(), 5);
+		pageModel.setData((List) page.getResult());
+		this.getRequest().setAttribute("pageModel", pageModel);
+	return 	SUCCESS;
+	}
+	
+	/**
+	 * 添加活动
+	 * @return
+	 */
+	@Action(value="jumpAdd",results={@Result(name = "success", location = "/WEB-INF/pages/activity/activityAdd.jsp")})
+	public String jumpAdd(){
+		return 	SUCCESS;
+	}
+
+	/**
+	 * 选择活动关联圈子
+	 * @return
+	 */
+	@Action(value="activityCommunity",results={@Result(name="success",location="/WEB-INF/pages/activity/activityCommunity.jsp")})
+	public String selectCommunity(){
+		if(communityQueryBean==null){
+			communityQueryBean = new CommunityQueryBean();
+		}
+		Page page = this.communityService.activityCommunity(communityQueryBean);
+		PageModel pageModel =new PageModel(communityQueryBean.getPageSize(), page.getTotalCount(), communityQueryBean.getPageNumber(), 5);
+		pageModel.setData((List) page.getResult());
+		this.getRequest().setAttribute("pageModel", pageModel);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 选择活动小区
+	 * @return
+	 */
+	@Action(value="getActivityArea",results={@Result(name="success",location="/WEB-INF/pages/activity/activityAreasAdd.jsp")})
+	public String getActivityArea(){
+		String communityIds=this.getRequest().getParameter("communityIds");
+
+		if(areaManageQueryBean==null){
+			areaManageQueryBean=new AreaManageQueryBean();
+		}
+		 //统计地区
+		provinces = new ArrayList<ProCityAreaTown>();
+		provinces = iProCityAreaTownService.getNoParentId();
+		
+		if(StringUtils.isNotBlank(areaManageQueryBean.getProvinceID())){
+			areaManageQueryBean.setProCode(areaManageQueryBean.getProvinceID());
+			citys = iProCityAreaTownService.findByParentId(areaManageQueryBean.getProvinceID());
+		}else{
+			citys = new ArrayList<ProCityAreaTown>();
+		}
+		
+		if(StringUtils.isNotBlank(areaManageQueryBean.getCityID())){
+			areaManageQueryBean.setCityCode(areaManageQueryBean.getCityID());
+			areas = iProCityAreaTownService.findByParentId(areaManageQueryBean.getCityID());
+		}else{
+			areas = new ArrayList<ProCityAreaTown>();
+		}
+		
+		if(StringUtils.isNotBlank(areaManageQueryBean.getAreaID())){
+			areaManageQueryBean.setAreaCode(areaManageQueryBean.getAreaID());
+		}
+		List<String> organizationSeqs=this.communityService.getCommunityAreaIds(communityIds);
+		if(organizationSeqs!=null&&organizationSeqs.size()>0){
+			areaManageQueryBean.setOrganizationSeqs(StringUtils.join(organizationSeqs.toArray(),","));
+		}
+		PageModel pm=this.iAreaManageService.getAreaList(null,areaManageQueryBean);
+//		String areaInfo="";
+//		if (StringUtils.isNotBlank(queryBean.getProCode()) || StringUtils.isNotBlank(queryBean.getCityCode())
+//				|| StringUtils.isNotBlank(queryBean.getAreaCode()) || StringUtils.isNotBlank(queryBean.getAreaName())) {
+//			List<Area> areas =this.iAreaManageService.getAreas(queryBean);
+//			if(areas!=null&&areas.size()>0){
+//				for(Area area:areas){
+//					if(StringUtils.isBlank(areaInfo)){
+//						areaInfo = area.getId()+"_"+area.getAreaName();
+//					}else{
+//						areaInfo+="|"+area.getId()+"_"+area.getAreaName();
+//					}
+//				}
+//			}
+//		} 
+		Page p=new Page(pm.getRecordStartNum(), pm.getRecordCount(), pm.getPageSize(), pm.getData());
+//		this.getRequest().setAttribute("areaInfo", areaInfo);
+		this.getRequest().setAttribute("pageModel", pm);
+		this.getRequest().setAttribute("communityIds", communityIds);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 选择活动商品页面
+	 * @return
+	 * @throws UnsupportedEncodingException 
+	 */
+	@Action(value="selectActicityCommodity",results={@Result(name="success",location="/WEB-INF/pages/activity/activityCommodity.jsp")})
+	public String selectActicityCommodity() throws UnsupportedEncodingException{
+		String areaType =this.getRequest().getParameter("areaType");
+		String resultCommunity = this.getRequest().getParameter("resultCommunity");
+		if(commodityQueryBean==null){
+			commodityQueryBean = new CommodityServiceQueryBean();
+		}
+		if(areaManageQueryBean==null){
+			areaManageQueryBean = new AreaManageQueryBean();
+		}
+		if(StringUtils.isNotBlank(areaType)&&areaType.equals("1")){  //选择圈子所关联的全部小区
+			List<String> organizationSeqs=this.communityService.getCommunityAreaIds(resultCommunity);
+			areaManageQueryBean.setOrganizationSeqs(StringUtils.join(organizationSeqs.toArray(),","));
+		}
+		List<Area> areas = this.iAreaManageService.getAreas(areaManageQueryBean);
+		commodityQueryBean.setAreas(areas);
+		commodityQueryBean.setSortType(" ORDER BY c.created_at DESC");
+		PageModel<CommodityVo> page = this.iCommodityService.getAcvityCommodityByAreas(commodityQueryBean);
+ 		this.getRequest().setAttribute("pageModel", page);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 保存活动
+	 */
+	@Action(value="saveActivity")
+	public void saveActivity(){
+		Map< String, String> map = new HashMap<String, String>();
+		try {
+			String id = UUIDGeneratorUtil.generateUUID();
+			String userAccount = (String) getSession().getAttribute("userAccount");
+			String  authLevel=(String) getSession().getAttribute("authLevel");
+			String option = queryBean.getOption();
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			//设置活动的基本信息
+			ActivityInfo activityInfo=null;
+			String backlogEventName ="";
+			if(option.equals("add")){ //新增
+				activityInfo =  new ActivityInfo();
+				activityInfo.setId(id);
+				backlogEventName = "新增活动";
+				activityInfo.setCreateTime(new Date());
+			}else if(option.equals("edit")){  //编辑
+				activityInfo = this.activityInfoService.getById(queryBean.getActivityId());
+				backlogEventName = "编辑活动基本信息";
+				activityInfo.setUpdateTime(new Date());
+			}
+			activityInfo.setCategory(Integer.valueOf(queryBean.getCategory()));
+			activityInfo.setCheckStatus(1); //一级审批
+			activityInfo.setContent(queryBean.getActivityRemark());
+			activityInfo.setCreatorAccount(userAccount);
+			activityInfo.setCreatorName(userAccount);
+			activityInfo.setTitle(queryBean.getTitle());
+			activityInfo.setSubTitle(queryBean.getSubTitle());
+			activityInfo.setLevelNo(authLevel);
+			activityInfo.setIndexPic(queryBean.getLogoSrc());
+			activityInfo.setStatus(0);
+			activityInfo.setPublishType(Integer.valueOf(queryBean.getAreaType()));
+			if(!queryBean.getCategory().equals("2")){
+				activityInfo.setStartTime(sdf.parse(queryBean.getActivityStartTime()));
+				activityInfo.setEndTime(sdf.parse(queryBean.getActivityEndTime()));
+			}
+			if(queryBean.getCategory().equals("1")){ //报名活动
+				activityInfo.setGroupAmount(queryBean.getGroupAmount());
+				activityInfo.setLimitAmount(queryBean.getLimitAmount());
+				if(queryBean.getActivityPriceType().equals("2")){
+					activityInfo.setPrice(Double.valueOf(queryBean.getActivityPrice()));  //非免费
+				}else{
+					activityInfo.setPrice(0.0);
+				}
+			}else if(queryBean.getCategory().equals("2")){ //票选活动
+				activityInfo.setIsElection(queryBean.getIsElection());
+				activityInfo.setIsVote(queryBean.getIsVote());
+				if(queryBean.getIsElection()==1){
+					activityInfo.setElectionStartTime(sdf.parse(queryBean.getCxStartTime()));
+					activityInfo.setElectionEndTime(sdf.parse(queryBean.getCxEndTime()));
+				}
+				if(queryBean.getIsVote()==1){
+					activityInfo.setVoteStartTime(sdf.parse(queryBean.getVoteStartTime()));
+					activityInfo.setVoteEndTime(sdf.parse(queryBean.getVoteEndTime()));
+				}
+			}
+			BacklogEvent backlogEvent = new BacklogEvent();
+			backlogEvent.setEventId(activityInfo.getId());
+			backlogEvent.setName(backlogEventName);
+			backlogEvent.setType(0);
+			backlogEvent.setCreateTime(new Date());
+			backlogEvent.setState(0);
+			backlogEvent.setCreatorAccount(userAccount);
+			backlogEvent.setCreatorName(userAccount);
+			backlogEvent.setRealState(0);
+			backlogEvent.setCategory(Integer.valueOf(queryBean.getCategory()));
+			if(queryBean.getAreaType().equals("1")){
+				List<String> organizationSeqs=this.communityService.getCommunityAreaIds(queryBean.getResultCommunity());
+				areaManageQueryBean = new AreaManageQueryBean();
+				areaManageQueryBean.setOrganizationSeqs(StringUtils.join(organizationSeqs.toArray(),","));
+				List<Area> areas = this.iAreaManageService.getAreas(areaManageQueryBean);
+				String orgSeq = "";
+				for(Area area:areas){
+					if(orgSeq==""){
+						orgSeq = area.getSerial()+"_"+area.getOrganizationSeq();
+					}else{
+						orgSeq = orgSeq+","+area.getSerial()+"_"+area.getOrganizationSeq();
+					}
+				}
+					if(queryBean.getOption().equals("add")){
+						this.activityInfoService.saveActicity(activityInfo,orgSeq,queryBean.getResultCommunity(),queryBean.getSelectCommodity(),backlogEvent);
+					}else if(queryBean.getOption().equals("edit")){
+						this.activityInfoService.updateActicityInfo(activityInfo,orgSeq,queryBean.getResultCommunity(),queryBean.getSelectCommodity(),backlogEvent);
+					}
+			}else{
+				if(queryBean.getOption().equals("add")){
+					this.activityInfoService.saveActicity(activityInfo,queryBean.getResultArea(),queryBean.getResultCommunity(),queryBean.getSelectCommodity(),backlogEvent);
+				}else if(queryBean.getOption().equals("edit")){
+					this.activityInfoService.updateActicityInfo(activityInfo,queryBean.getResultArea(),queryBean.getResultCommunity(),queryBean.getSelectCommodity(),backlogEvent);
+					
+				}
+				
+			}
+			this.backlogEventService.saveBacklogEvent(backlogEvent);
+			map.put("result", "success");
+			map.put("success", "添加活动成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("result", "error");
+			map.put("error", "系统繁忙，请稍后重试！");
+		}
+		AjaxJsonAndXmlUtil.writeJson(JSONObject.fromObject(map).toString(), this.getResponse());
+	} 
+	
+	/**
+	 * 查看活动详情
+	 * @return
+	 */
+	@Action(value="viewActivity",results={@Result(name="success",location="/WEB-INF/pages/activity/activityView.jsp")})
+	public String viewActivity(){
+		HttpServletRequest request = getRequest();
+		//待办事件id
+		String backlogEventId = request.getParameter("backlogEventId");
+
+		if(backlogEventId!=null){
+			BacklogEvent  backlogEvent = backlogEventService.getBacklogEventById(backlogEventId);
+			request.setAttribute("backlogEvent", backlogEvent);
+
+		}
+		String activityId = this.getRequest().getParameter("activityId");
+		String viewAudit  = this.getRequest().getParameter("viewAudit");  //1：从审核页面进来
+ 		ActivityInfo activityInfo = this.activityInfoService.getById(activityId);    //活动基本信息
+		List<String> communities = this.communityService.getCommunitiesByAcvityId(activityId);   //圈子名称集合
+		List<String> comodities = this.activityCommodityService.getCommodityIdByAcvityId(activityId);  //商品id集合
+		List<String> commodityInfo =this.iCommodityService.getCommodityNameByIds(comodities);   //商品名称的集合
+		List<String> organizationSeqs = this.activityAreaService.getAreaIdsByAcvityId(activityId);
+		areaManageQueryBean = new AreaManageQueryBean();
+		areaManageQueryBean.setOrganizationSeqs(StringUtils.join(organizationSeqs.toArray(),","));
+		List<Area> areas = this.iAreaManageService.getAreas(areaManageQueryBean);  //发布范围集合
+		List<String> areaNames = new ArrayList<String>();
+		for(Area area:areas){
+			areaNames.add(area.getAreaName());
+		}
+		if(activityInfo.getCategory()==2&&activityInfo.getIsVote()==1){  //票选活动且有投票
+			int optionVoteNum=0;
+			String auditSerial="";
+			List<ActivityOptions> activityOptions = this.activityOptionsService.getByActivityId(activityId);
+			List<ActivityOptionsVo> activityOptionsVos =new ArrayList<ActivityOptionsVo>();
+			int num=1;
+			for(ActivityOptions option:activityOptions){
+				ActivityOptionsVo vo = new ActivityOptionsVo();
+				vo.setOptionsId(option.getId());
+				vo.setPicSource(option.getPicSource());
+				vo.setPicThumb(option.getPicThumb());
+				vo.setPollNums(String.valueOf(option.getPollNums()));
+				vo.setTitle(option.getTitle());
+				vo.setAuditSerial(option.getAuditSerial());
+				vo.setNum(num);
+				vo.setUserAccount(option.getUserAccount());
+				optionVoteNum=optionVoteNum+option.getPollNums();
+				activityOptionsVos.add(vo);
+				auditSerial = option.getAuditSerial();
+				num++;
+			} 
+			// 创建一个数值格式化对象
+
+			NumberFormat numberFormat = NumberFormat.getInstance();
+
+			// 设置精确到小数点后2位
+
+			numberFormat.setMaximumFractionDigits(2);
+
+			for(ActivityOptionsVo vo:activityOptionsVos){
+				String percent = numberFormat.format(Float.valueOf(vo.getPollNums()) / (float) optionVoteNum * 100);
+				vo.setPercent(percent+"%");
+			}
+			this.getRequest().setAttribute("auditSerial", auditSerial);
+			this.getRequest().setAttribute("activityOptionsVos", activityOptionsVos);
+		}
+		this.getRequest().setAttribute("viewAudit", viewAudit);
+		this.getRequest().setAttribute("communities", communities);
+		this.getRequest().setAttribute("commodityInfo", commodityInfo);
+		this.getRequest().setAttribute("areaNames", areaNames);
+		this.getRequest().setAttribute("activityInfo", activityInfo);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 上传图片
+	 */
+	@Action(value="uploadImg")
+	public void uploadLogo(){
+		Map<String,Object> result = new HashMap<String,Object>();	
+		try{
+			if(null != file){
+				String serverUrl=fmsServerUrl+"/imagesUpload";
+				File[] files = new File[1];
+				files[0]= FileUtil.changeSuffix(file, fileFileName);
+				String retVal=HttpClientUtil.transImgToFms(files,serverUrl);
+				JSONObject retObj=JSONObject.fromObject(retVal);
+				JSONArray list=retObj.getJSONArray("list");
+				String imgUrl  = list.getJSONObject(0).getString("o_path");  //图片路径
+				String imgThumUr  = list.getJSONObject(0).getString("t_path"); //缩略图路径
+				result.put("imgUrl", imgUrl);//上传图片路径
+				result.put("imgThumUr", imgThumUr);
+				result.put("result", "true");
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+			result.put("result", "false");
+			result.put("error", "很抱歉，网络异常，请稍后重试！");
+		}
+		HttpServletResponse response =this.getResponse();
+		AjaxJsonAndXmlUtil.writeHtml(JSONObject.fromObject(result).toString(),response);
+	}
+	
+	/**
+	 * 新增票选活动的选项
+	 * @return
+	 */
+	@Action(value="jumpAddOptions",results={@Result(name="success",location="/WEB-INF/pages/activity/activityOptions.jsp")})
+	public String jumpAddOptions(){
+		String activityId= this.getRequest().getParameter("activityId");
+		String webOptions = this.getRequest().getParameter("webOptions");
+		String multiSelectNum = this.getRequest().getParameter("MultiSelectNum");
+		String isMultiSelect = this.getRequest().getParameter("isMultiSelect");
+		String auditSerial = this.getRequest().getParameter("auditSerial");
+		ActivityInfo activityInfo = this.activityInfoService.getById(activityId);
+		List<ActivityOptions> options = new ArrayList<ActivityOptions>();
+		this.getRequest().setAttribute("activityId", activityId);
+		this.getRequest().setAttribute("MultiSelectNum", multiSelectNum);
+		this.getRequest().setAttribute("isMultiSelect", isMultiSelect);
+		this.getRequest().setAttribute("activityInfo", activityInfo);
+		if(optionsQueryBean==null){
+			optionsQueryBean = new ActivityOptionsQueryBean();
+		}
+		if(StringUtils.isNotBlank(webOptions)){  //页面上添加的选项（选项id_选项标题_用户账号_选项缩略图片地址_选项图片原图_选项来源）
+			String []optionsArr=webOptions.split(",");
+			for(int i=0;i<optionsArr.length;i++){
+				ActivityOptions activityOptions =new ActivityOptions();
+				String []arr=optionsArr[i].split("\\|");
+				activityOptions.setActivityId(activityId);
+				activityOptions.setId(arr[0]);
+				activityOptions.setTitle(arr[1]);
+				activityOptions.setUserAccount(arr[2]);
+				if(StringUtils.isNotBlank(arr[4])){
+					activityOptions.setPicSource(arr[4]);
+				}else{
+					activityOptions.setPicSource("");
+				}
+				if(StringUtils.isNotBlank(arr[3])){
+					activityOptions.setPicThumb(arr[3]);
+				}else{
+					activityOptions.setPicThumb("");
+				}
+				activityOptions.setSource(Integer.valueOf(arr[5]));
+				options.add(activityOptions);
+			}
+		} else {
+			options = this.activityOptionsService.getByActivityId(activityId);
+					// 页面上添加的选项（选项id_选项标题_用户账号_选项缩略图片地址_选项图片原图_选项来源）
+			if (options != null && options.size() > 0) {
+					for (ActivityOptions option : options) {
+						if (StringUtils.isBlank(webOptions)) {
+							webOptions = option.getId() + "|" + option.getTitle() + "|" + option.getUserAccount() + "|"
+									+ option.getPicThumb() + "|" + option.getPicSource() + "|" + option.getSource();
+						} else {
+							webOptions = webOptions + "," + option.getId() + "|" + option.getTitle() + "|"
+									+ option.getUserAccount() + "|" + option.getPicThumb() + "|" + option.getPicSource()
+									+ "|" + option.getSource();
+						}
+					}
+				}
+		}
+		this.getRequest().setAttribute("auditSerial", auditSerial);
+		this.getRequest().setAttribute("webOptions", webOptions);
+		this.getRequest().setAttribute("options", options);
+		optionsQueryBean.setSource(1);
+		optionsQueryBean.setSortType(" ORDER BY createTime DESC");
+		optionsQueryBean.setAuditSerial("-1");
+		Page page = this.activityOptionsService.list(optionsQueryBean);
+		PageModel pageModel =new PageModel(optionsQueryBean.getPageSize(), page.getTotalCount(), optionsQueryBean.getPageNumber(), 5);
+		if(options!=null&&options.size()>0){ 
+			Map<String, ActivityOptions> map = new HashMap<String, ActivityOptions>();
+			for(ActivityOptions activityOptions:options){
+				map.put(activityOptions.getId(), activityOptions);
+			}
+			List<ActivityOptions> pageList=(List<ActivityOptions>) page.getResult();
+			if(pageList!=null&&pageList.size()>0){
+				for(ActivityOptions list:pageList){
+					if(map.get(list.getId())!=null){
+						list.setStatus(1);
+					}
+				}
+				page.setData(pageList);
+			}
+		}
+		pageModel.setData((List) page.getResult());
+		this.getRequest().setAttribute("pageModel", pageModel);
+		return SUCCESS;
+	}
+	
+	/**
+	 * 保存票选活动选项
+	 */
+	@Action(value="saveOptions")
+	public void saveOptions(){
+		Map< String, String> map = new HashMap<String, String>();
+		try {
+			String activityId = this.getRequest().getParameter("acticityId");
+			String MultiSelectNum=this.getRequest().getParameter("MultiSelectNum");
+			String userAccount = (String) getSession().getAttribute("userAccount");
+			String originalAuditSerial= this.getRequest().getParameter("auditSerial"); //原始的序列号
+			String auditSerial = UUIDGeneratorUtil.generateUUID().substring(0, 10);  //生成十位的审核序列号
+			// 页面上添加的选项（选项id_选项标题_用户账号_选项缩略图片地址_选项图片原图_选项来源_是否是新增的数据）
+			String webOptions=this.getRequest().getParameter("webOptions"); 
+			String isMultiSelect=this.getRequest().getParameter("isMultiSelect");
+			ActivityInfo activityInfo = this.activityInfoService.getById(activityId);
+			if(isMultiSelect.equals("0")){ //单选
+				activityInfo.setIsMultiSelect(0);
+			}else if(isMultiSelect.equals("1")){
+				activityInfo.setIsMultiSelect(1);
+				activityInfo.setVoteNum(Integer.valueOf(MultiSelectNum));
+			}
+			this.activityInfoService.update(activityInfo);
+			String []optionArr = webOptions.split(",");
+			Map<String, ActivityOptions> optionMap=new HashMap<String, ActivityOptions>();
+			List<ActivityOptions> saveList=new ArrayList<ActivityOptions>();
+			List<String> optionId = new ArrayList<String>();
+			for(int i=0;i<optionArr.length;i++){
+				ActivityOptions activityOption = new ActivityOptions();
+				String []arr = optionArr[i].split("\\|");
+				optionId.add(arr[0]);
+//				activityOption.setId(arr[0]);
+				activityOption.setCreateTime(new Date());
+				if(StringUtils.isNotBlank(arr[4])){
+					activityOption.setPicSource(arr[4]);
+				}else{
+					activityOption.setPicSource("");
+				}
+				if(StringUtils.isNotBlank(arr[3])){
+					activityOption.setPicThumb(arr[3]);
+				}else{
+					activityOption.setPicThumb("");
+				}
+				activityOption.setSource(Integer.valueOf(arr[5]));
+				activityOption.setStatus(0);
+				activityOption.setTitle(arr[1]);
+				activityOption.setUserAccount(arr[2]);
+				activityOption.setActivityId(activityId);
+				activityOption.setAuditSerial(auditSerial);
+				activityOption.setPollNums(0);
+				optionMap.put(arr[0], activityOption);
+			}
+			List<ActivityOptions> updatelist = this.activityOptionsService.getById(optionId);
+			if(updatelist!=null&&updatelist.size()>0){  //存在需要更新的选项
+				for(ActivityOptions options:updatelist){
+					if(optionMap.get(options.getId())!=null){
+						ActivityOptions o  =optionMap.get(options.getId());
+						options.setAuditSerial(o.getAuditSerial());
+						options.setPicSource(o.getPicSource());
+						options.setPicThumb(o.getPicThumb());
+						options.setStatus(o.getStatus());
+						options.setUpdateTime(new Date());
+						options.setTitle(o.getTitle());
+						options.setUserAccount(o.getUserAccount());
+						options.setAuditSerial(auditSerial);
+						optionMap.remove(options.getId());
+					}
+				}
+				for (ActivityOptions value : optionMap.values()) {  
+					saveList.add(value);
+				} 
+			}
+			BacklogEvent backlogEvent = new BacklogEvent();
+			backlogEvent.setEventId(activityInfo.getId());
+			backlogEvent.setName("票选活动选项的编辑");
+			backlogEvent.setType(3);
+			backlogEvent.setCreateTime(new Date());
+			backlogEvent.setState(0);
+			backlogEvent.setCreatorAccount(userAccount);
+			backlogEvent.setCreatorName(userAccount);
+			backlogEvent.setRealState(0);
+			backlogEvent.setCategory(2);
+			this.activityOptionsService.saveInfo(saveList,updatelist,backlogEvent);
+			if(StringUtils.isNotBlank(originalAuditSerial)){
+				List<ActivityOptions> activityOptions = this.activityOptionsService.getByAuditSerial(originalAuditSerial);
+				if(activityOptions!=null&&activityOptions.size()>0){
+					for(ActivityOptions ao:activityOptions){
+						ao.setStatus(0);
+					}
+					this.activityOptionsService.bachUpdate(activityOptions);
+				}
+			}
+			map.put("result", "success");
+			map.put("success", "提交审核成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("result", "error");
+			map.put("error", "系统繁忙，请稍后重试！");
+		}
+		AjaxJsonAndXmlUtil.writeHtml(JSONObject.fromObject(map).toString(),this.getResponse());
+	}
+	
+	/**
+	 * 编辑活动
+	 * @return
+	 */
+	@Action(value="editActivity",results={@Result(name="success",location="/WEB-INF/pages/activity/activityEdit.jsp")})
+	public String editActivity() {
+		HttpServletRequest request = getRequest();
+		//待办事件id
+		String backlogEventId = request.getParameter("backlogEventId");
+
+		if(backlogEventId!=null){
+			BacklogEvent backlogEvent = backlogEventService.getBacklogEventById(backlogEventId);
+			request.setAttribute("backlogEvent", backlogEvent);
+
+		}
+		String activityId = this.getRequest().getParameter("activityId");
+		int activityStatus =0;  //活动状态 1：未开始跟已结束 2进行中 
+ 		ActivityInfo activityInfo = this.activityInfoService.getById(activityId);    //活动基本信息
+ 		if(activityInfo.getCategory()==1||activityInfo.getCategory()==3){  //常规跟报名活动
+ 			Long startTime =activityInfo.getStartTime().getTime();
+ 			Long endTime = activityInfo.getEndTime().getTime();
+ 			Long now = new Date().getTime();
+ 			if(startTime<now&&now<endTime){  //进行中的活动
+ 				activityStatus = 2;
+ 			}else{
+ 				activityStatus =1;
+ 			}
+ 		}else{  //票选活动
+ 			if(activityInfo.getIsElection()==1&&activityInfo.getIsVote()==0){ //参选不投票
+ 				Long startTime =activityInfo.getElectionStartTime().getTime();
+ 	 			Long endTime = activityInfo.getElectionEndTime().getTime();
+ 	 			Long now = new Date().getTime();
+ 	 			if(startTime<now&&now<endTime){  //进行中的活动
+ 	 				activityStatus = 2;
+ 	 			}else{
+ 	 				activityStatus =1;
+ 	 			}
+ 			}else if(activityInfo.getIsElection()==1&&activityInfo.getIsVote()==1){//参选且投票
+ 				Long startTime =activityInfo.getElectionStartTime().getTime();
+ 	 			Long endTime = activityInfo.getVoteEndTime().getTime();
+ 	 			Long now = new Date().getTime();
+ 	 			if(startTime<now&&now<endTime){  //进行中的活动
+ 	 				activityStatus = 2;
+ 	 			}else{
+ 	 				activityStatus =1;
+ 	 			}
+ 			}else if(activityInfo.getIsElection()==0&&activityInfo.getIsVote()==1){ //不参选且投票
+ 				Long startTime =activityInfo.getVoteStartTime().getTime();
+ 	 			Long endTime = activityInfo.getVoteEndTime().getTime();
+ 	 			Long now = new Date().getTime();
+ 	 			if(startTime<now&&now<endTime){  //进行中的活动
+ 	 				activityStatus = 2;
+ 	 			}else{
+ 	 				activityStatus =1;
+ 	 			}
+ 			}
+ 		}
+ 		this.getRequest().setAttribute("activityStatus", activityStatus); 
+ 		
+ 		
+		List<Map<String, Object>> communities = this.communityService.getMapInfoByAcvityId(activityId);   //圈子名称、id的集合
+//		List<String> communityName = this.communityService.getCommunitiesByAcvityId(activityId); 
+		
+		List<String> comodities = this.activityCommodityService.getCommodityIdByAcvityId(activityId);  //商品id集合
+		List<String> organizationSeqs = this.activityAreaService.getAreaIdsByAcvityId(activityId);
+		areaManageQueryBean = new AreaManageQueryBean();
+		areaManageQueryBean.setOrganizationSeqs(StringUtils.join(organizationSeqs.toArray(),","));
+		List<Area> areas = this.iAreaManageService.getAreas(areaManageQueryBean);  //发布范围集合
+		List<Map<String, String>> areaMap = new ArrayList<Map<String, String>>();
+		List<String> areaId=new ArrayList<String>();
+		List<String> areaOrgs=new ArrayList<String>();
+		List<String> communitiyId =new ArrayList<String>();
+		for(Area area:areas){
+			Map<String, String> map = new HashMap<String, String>();
+			map.put("serial", area.getSerial());
+			map.put("name", area.getAreaName());
+			areaMap.add(map);
+			areaId.add(area.getSerial()+"_"+area.getOrganizationSeq());
+			areaOrgs.add(area.getOrganizationSeq());
+		}
+		for(Map<String , Object> map:communities){
+			communitiyId.add((String) map.get("id"));
+		}
+		if(StringUtils.isNotBlank(backlogEventId)){  //待办事件里面跳入
+			BacklogEvent backlogEvent = this.backlogEventService.getBacklogEventById(backlogEventId);
+			this.getRequest().setAttribute("auditReason", backlogEvent.getAuditReason());
+		}
+		this.getRequest().setAttribute("communities", communities);
+		this.getRequest().setAttribute("areaMap", areaMap);
+		this.getRequest().setAttribute("activityInfo", activityInfo);
+		this.getRequest().setAttribute("resultArea", StringUtils.join(areaId.toArray(),","));  
+		this.getRequest().setAttribute("resultCommodity", StringUtils.join(comodities.toArray(),",")); //商品id集合
+		this.getRequest().setAttribute("areaOrgs",  StringUtils.join(areaOrgs.toArray(),","));  //小区机构编号
+		this.getRequest().setAttribute("resultCommunity", StringUtils.join(communitiyId.toArray(),",")); //圈子id
+		return SUCCESS;
+	}
+	
+	
+	/**
+	 * 更新活动状态
+	 * @return
+	 */
+	@Action(value="changeActivityStatus")
+	public void changeActivityStatus(){
+		Map< String, String> map = new HashMap<String, String>();
+		try {
+			if(queryBean==null){
+				queryBean = new ActivityQueryBean();
+			}
+			activityInfoService.changeActivityStatus(queryBean);
+			
+			map.put("result", "success");
+			map.put("success", "更改活动状态成功！");
+		} catch (Exception e) {
+			e.printStackTrace();
+			map.put("result", "error");
+			map.put("error", "系统繁忙，请稍后重试！");
+		}
+		AjaxJsonAndXmlUtil.writeJson(JSONObject.fromObject(map).toString(), this.getResponse());
+	}
+	
+	/**
+	 * 导出报名活动的报名信息
+	 * @return
+	 */
+	@Action(value="exportActivityRecord")
+	public void exportActivityRecord(){
+		String activityId= this.getRequest().getParameter("activityId");
+	
+		String excelType = "";
+		String excelFileName = "";
+		ActivityInfo ao = activityManageService.getActivityInfo(activityId);
+		if(ao.getTitle() != null){
+			excelFileName = ao.getTitle()+"报名记录.xls";
+		}
+		//活动参团记录
+		List<UserActivityRecord> uarList = activityManageService.getUserActivityRecordByActivityId(activityId);
+		if(ao.getPrice() ==null || ao.getPrice() == 0){
+			excelType = "0";
+		}else{
+			excelType = "1";
+		}
+		try {
+			//activityManageService.exportActivityRecord(excelType, uarList, getOutputStreamByDownload(excelFileName,this.getResponse()));
+			
+			//根据报团活动是否是免费，导出不一样的excel
+			OutputStream out= getOutputStreamByDownload(excelFileName,this.getResponse());
+			final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+			if(("0").equals(excelType)){//免费
+				String [] headers=new String[]{"手机账号","报名时间","备注"};
+				ExportexcelWithSimpleCall<UserActivityRecord> ep=new ExportexcelWithSimpleCall<UserActivityRecord>();
+				ep.exportExcel("参团活动报名记录", headers, uarList, out, new RowCallBack(){
+					@Override
+					public void invoke(Object t, HSSFRow row,HSSFCellStyle style) {
+						UserActivityRecord cv = (UserActivityRecord) t;
+						HSSFCell cell = create(row , style,0);
+			            cell.setCellValue(cv.getUserAccount());
+			            
+			            cell=null;
+			            cell = create(row , style,1);
+			            cell.setCellValue(cv.getCreateTime() == null? "":sdf.format(cv.getCreateTime()));
+			          
+			            cell=null;
+			            cell = create(row , style,2);
+			            cell.setCellValue("");
+					}
+				});
+				
+			}else if(("1").equals(excelType)){//收费
+				String [] headers=new String[]{"手机账号","报名时间","姓名","手机号"};
+				ExportexcelWithSimpleCall<UserActivityRecord> ep=new ExportexcelWithSimpleCall<UserActivityRecord>();
+				ep.exportExcel("参团活动报名记录", headers, uarList, out, new RowCallBack(){
+					@Override
+					public void invoke(Object t, HSSFRow row,HSSFCellStyle style) {
+						UserActivityRecord cv = (UserActivityRecord) t;
+						HSSFCell cell = create(row , style,0);
+			            cell.setCellValue(cv.getUserAccount());
+			            
+			            cell=null;
+			            cell = create(row , style,1);
+			            cell.setCellValue(cv.getCreateTime() == null? "":sdf.format(cv.getCreateTime()));
+			          
+			            cell=null;
+			            cell = create(row , style,2);
+			            cell.setCellValue(cv.getUserName());
+			            
+			            cell=null;
+			            cell = create(row , style,3);
+			            cell.setCellValue(cv.getMobile());
+					}
+				});
+			}
+			 
+			out.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+	}
+	
+	
+	private HSSFCell create(HSSFRow r,HSSFCellStyle style,int column){
+		HSSFCell cell = r.createCell(column);
+        cell.setCellStyle(style);
+        return cell;
+	}
+	
+	public static  OutputStream getOutputStreamByDownload(String fileName,HttpServletResponse response){
+		response.reset();
+		response.setContentType("application/force-download");
+		//根据不同浏览器输出
+		String agent = ServletActionContext.getRequest().getHeader("User-Agent");
+		System.out.println("浏览器agent----"+agent);
+		boolean isMSIE = (agent != null && agent.indexOf("MSIE") != -1 || agent != null && agent.indexOf("Trident") != -1);
+		try {
+			if (isMSIE) {
+				fileName = URLEncoder.encode(fileName, "UTF-8");
+			} else {
+				fileName = new String(fileName.getBytes("UTF-8"), "ISO-8859-1");
+			}
+		}catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+
+		response.addHeader("Content-Disposition", "attachment;filename=\"" + fileName + "\"");
+		
+		OutputStream os=null;
+		try {
+			os = response.getOutputStream();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return os;
+	}
+	
+}

@@ -1,0 +1,118 @@
+/*$(function(){
+	$(".apply-nav-span div span").click(function(){
+		$(this).addClass("apply-nav-active").siblings().removeClass("apply-nav-active");
+		var index = $(this).index();
+		$(".apply-div-pop>div").eq(index).show().siblings().hide();
+	});
+});*/
+/*$(function(){
+	var time_stamp = new Date().getTime();
+	var params = {
+		body:{
+			verifyStatus: 0
+		},
+		header:{
+			token:"00",
+			time_stamp:time_stamp
+		}
+	}
+    var paramsStr = encodeURI(JSON.stringify(params));
+    console.log(paramsStr);
+	$.ajax({
+		url:"http://192.168.51.24:8090/lxjsdkApi/getApplicationList?str="+paramsStr,
+		dataType: "jsonp",
+        jsonp: "jsoncallback",
+        jsonpCallback: "success_jsonpCallback",
+		success:function(data){
+			console.log(data);
+		}
+	})
+});*/
+var vue = new Vue({
+    el: '#apply',
+    data: {
+        name: "小菜鸟开发员",
+        addApplyNo: 1,
+        picked: "-1",
+        sdkItem: "",
+        sdkItemNoData: false,
+        oneStatus: true,
+        twoStatus: false,
+        terraceFlag: false,
+        hostUrl: "http://192.168.51.24:8090/lxjsdkApi/getApplicationList?str=",
+
+    },
+    filters: {
+	    status: function (value) {
+	        if (!value) return '';
+	      	if(value == 0){
+	      		value = "审核中";
+	      	}else if(value == 1){
+	      	    value = "未通过";
+	        }else if(value == 2){
+	      	    value = "通过";
+	        }
+	        return value;
+	    },
+	    time: function(value){
+            if (!value) return '';
+	    	  var da = value;
+	          da = new Date(da);
+	          var year = da.getFullYear();
+	          var month = da.getMonth()+1;
+	          var date = da.getDate();
+	          var value = [year,month,date].join('-');
+	          return value;
+		    }
+	  	},
+    methods:{
+    	addApply(num){
+    		this.addApplyNo = num;
+    		if(num == 1){
+    			this.oneStatus = true;
+    			this.twoStatus = false;
+    		}else{
+    			this.oneStatus = false;
+    			this.twoStatus = true;
+    		}
+    	},
+    	sdkAjax:function(pickedNum){
+    		var time_stamp = new Date().getTime();
+    		var params = {
+    			body:{
+					verifyStatus: this.picked
+    			},
+    			header:{
+    				token:"00",
+    				time_stamp:time_stamp
+    			}
+    		}
+    		var paramsStr = encodeURI(JSON.stringify(params));
+    		var httpURL = this.hostUrl+paramsStr
+    		this.$http.jsonp(httpURL,{
+			    emulateJSON: true,
+				method: "get",
+				dataType: "jsonp",
+				jsonp: "jsoncallback",
+			}).then(function(res){  
+            	var data = res.body;
+            	this.sdkItem = data.list;
+            	if(data.list.length == 0){
+            		this.sdkItemNoData = true;
+            	}else{
+            		this.sdkItemNoData = false;
+            	}  
+            },function(res){  
+                console.log(res);  
+            });  
+    	}
+    },
+    mounted(){
+    	this.sdkAjax(this.pickedNum);
+    },
+    watch:{
+    	picked(newValue,oldValue){
+    		this.sdkAjax(newValue);
+    	}
+    }
+})

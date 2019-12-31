@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>联享家平台错误码定义</title>
+</head>
+<body>
+<h4 style="text-align: center">联享家平台错误码定义</h4>
+<table width="600" border="1" cellspacing="0" cellpadding="0">
+    <tr>
+        <td>处理结果</td>
+        <td>错误内容</td>
+    </tr>
+    <tr>
+        <td>0</td>
+        <td>响应成功</td>
+    </tr>
+    <tr>
+        <td>001</td>
+        <td>消息格式错误</td>
+    </tr>
+    <tr>
+        <td>002</td>
+        <td>Token验证错误</td>
+    </tr>
+    <tr>
+        <td>003</td>
+        <td>Token过期</td>
+    </tr>
+    <tr>
+        <td>004</td>
+        <td>找不到对应的方法</td>
+    </tr>
+    <tr>
+        <td>005</td>
+        <td>有错误信息，查看reason字段</td>
+    </tr>
+    <tr>
+        <td>020</td>
+        <td>鉴权不通过（鉴权帐号或密码不正确）</td>
+    </tr>
+    <tr>
+        <td>021</td>
+        <td>小区编号不正确</td>
+    </tr>
+</table>
+</body>
+</html>

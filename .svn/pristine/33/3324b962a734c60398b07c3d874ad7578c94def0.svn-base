@@ -1,0 +1,6 @@
+//注意：下面的代码是放在iframe引用的子页面中调用
+$(window.parent.document).find("#iframeId").load(function () {
+    var main = $(window.parent.document).find("#iframeId");
+    var thisheight = $(document).height() + 300;
+    main.height(thisheight);
+});

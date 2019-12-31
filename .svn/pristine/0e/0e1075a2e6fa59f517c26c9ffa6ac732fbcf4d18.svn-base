@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>联享家平台错误码定义</title>
+    <link rel="stylesheet" href="../common/css/reset.css">
+</head>
+<body>
+<div class="profile">
+    <h2 class="headline_h2 text_index" style="margin-bottom: 20px;">联享家平台错误码定义</h2>
+    <table class="table_gauge" style="font-size:16px;width: 100%;" width="600" border="1" cellspacing="0" cellpadding="0">
+        <tr>
+            <td>处理结果</td>
+            <td>错误内容</td>
+        </tr>
+        <tr>
+            <td>0</td>
+            <td>响应成功</td>
+        </tr>
+        <tr>
+            <td>001</td>
+            <td>消息格式错误</td>
+        </tr>
+        <tr>
+            <td>002</td>
+            <td>Token验证错误</td>
+        </tr>
+        <tr>
+            <td>003</td>
+            <td>Token过期</td>
+        </tr>
+        <tr>
+            <td>004</td>
+            <td>找不到对应的方法</td>
+        </tr>
+        <tr>
+            <td>005</td>
+            <td>有错误信息，查看reason字段</td>
+        </tr>
+        <tr>
+            <td>007</td>
+            <td>无权限访问未与平台账号关联的小区</td>
+        </tr>
+        <tr>
+            <td>008</td>
+            <td>平台接入账号或密码错误</td>
+        </tr>
+        <tr>
+            <td>017</td>
+            <td>appKey无效</td>
+        </tr>
+        <tr>
+            <td>018</td>
+            <td>用户ID不存在</td>
+        </tr>
+        <tr>
+            <td>019</td>
+            <td>SDK包名不正确与APP Key不匹配</td>
+        </tr>
+        <tr>
+            <td>020</td>
+            <td>鉴权不通过（鉴权帐号或密码不正确）</td>
+        </tr>
+        <tr>
+            <td>021</td>
+            <td>小区编号不正确</td>
+        </tr>
+    </table>
+</div>
+
+</body>
+</html>

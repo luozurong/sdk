@@ -1,0 +1,32 @@
+/*$(".terrace-submit").click(function(){
+    sdkAjax();
+});*/
+var timestamp = new Date().getTime();
+var host = "http://192.168.51.24:8090";
+function sdkAjax() {
+
+    var params = {};
+    params.body = {
+         company:"sdfs",
+         appName:"dsfs",
+         appPackage:"fsdf"
+    };
+    params.header = {
+        token: "12213",
+        time_stamp: timestamp
+    };
+    var paramData = encodeURI(JSON.stringify(params));
+    //var reqUrl = host + "/lxjsdkApi/addApplication?str=" + paramData;
+    $.ajax({
+        type: "get",
+        url: reqUrl,
+        dataType: "jsonp",
+        jsonp: "jsoncallback",
+        jsonpCallback: "success_jsonpCallback",
+        success: function(odata) {
+            if(odata.result == 0){
+                console.log(odata);
+            }
+        }
+    })
+}

@@ -1,0 +1,52 @@
+package com.hori.lxjsdk.dao;
+
+import java.util.List;
+
+import org.springframework.stereotype.Repository;
+
+import com.hori.lxjsdk.extend.HibernateEntityExtendDao;
+import com.hori.lxjsdk.model.User;
+import com.hori.lxjsdk.web.queryBean.UserQueryBean;
+
+@Repository("userDao")
+public class UserDao extends HibernateEntityExtendDao<User>{
+
+	/**
+	 * 用户注册
+	 * @param application
+	 */
+	public void addUser(User user) {
+		this.save(user);
+	}
+	/**
+	 * 根据账号查找用户
+	 * @param userAccount
+	 * @return
+	 */
+	public User findUserByAccount(String userAccount) {
+		
+		String hql = "FROM User WHERE userAccount ='"+userAccount+"'";
+		List<User> list = this.find(hql);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	/**
+	 * 用户登录
+	 * @param userAccount
+	 * @param password
+	 * @return
+	 */
+	public User login(String userAccount, String password) {
+		String hql = "FROM User WHERE userAccount ='"+userAccount+"' AND password = '"+password+"'";
+		List<User> list = this.find(hql);
+		if(list!=null&&list.size()>0){
+			return list.get(0);
+		}
+		return null;
+	}
+	
+	
+}

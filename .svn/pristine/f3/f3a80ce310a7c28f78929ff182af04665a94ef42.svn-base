@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>第三方系统接入鉴权流程</title>
+    <link rel="stylesheet" href="../common/css/reset.css">
+    <style>
+        .text_index{
+            text-indent: 25px;
+            text-align: justify;
+            padding-bottom: 30px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <h4 class="text_index" style="text-align:center;">第三方系统接入鉴权流程</h4>
+    <div class="docCenter-single">
+        <img style="padding-left: 160px;" src="img/singsing.png" alt=""/>
+    </div>
+</body>
+</html>

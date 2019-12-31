@@ -1,0 +1,189 @@
+*{
+	padding: 0;
+	margin: 0;
+	font-family: "MILT_RG,arial,Microsoft YaHei";
+	font-size: 14px;
+}
+a{
+	text-decoration: none;
+	color:#333;
+}
+input::-webkit-placeholder{
+	color:#ccc;
+}
+.logo{
+	overflow: hidden;
+	width:1100px;
+	margin:100px auto;
+}
+.logo img{
+	float:left;
+	width:40px;
+	margin-top:10px;
+	margin-right:10px;
+}
+.logo span{
+	font-size: 30px;
+	color:#333;
+	line-height: 57px;
+}
+.login-wrap{
+	width: 1100px;
+	margin:100px auto;
+	overflow: hidden;
+}
+.login-wrap>div{
+	display: inline-block;
+	box-sizing: border-box;
+	width:50%;
+	float:left;
+}
+.login-content{
+	box-sizing: border-box;
+	padding-left: 100px;
+}
+.login-pic img{
+	width: 80%;
+	display: block;
+	margin: 0 auto;
+	min-height: 300px;
+}
+.login-content-pic{
+	overflow: hidden;
+}
+.login-content-pic img{
+	width:30px;
+	float:left;
+}
+.login-content-pic span{
+	float:left;
+	line-height: 30px;
+	font-size: 20px;
+}
+.login-content-main p{
+	color:#e43932;
+	font-size: 12px;
+	height:18px;
+}
+.login-content-main div{
+	width:320px;
+	height:40px;
+	border:1px solid #ccc;
+}
+.login-word{
+	padding-left: 5px;
+	margin-top:20px;
+}
+.login-word-user{
+	display: inline-block;
+	width: 20px;
+	height:20px;
+	float:left;
+	background: url(../img/icon.png) no-repeat 0 -52px;
+	margin-top: 9px;
+}
+.login-word-psw{
+	display: inline-block;
+	width: 20px;
+	height:20px;
+	float:left;
+	background: url(../img/icon.png) no-repeat -21px -52px;
+	margin-top: 9px; 
+}
+.login-content-main div input{
+	float:left;
+	width:285px;
+	height:38px;
+	margin-left:10px;
+	border:none;
+	outline: none;
+}
+.login-content-main .login-submit{
+	width:320px;
+	height:42px;
+	background: #fc9153;
+	border:none;
+	font-size: 16px;
+	text-align: center;
+	line-height: 42px;
+	color:#fff;
+	letter-spacing: 5px;
+	margin-top:20px;
+	padding-left:5px;
+}
+.login-other{
+	width:325px;
+}
+.login-other a{
+	float:right;
+	display: inline-block;
+	line-height: 25px;
+	color:#2e82ff;
+	font-size: 12px;
+	margin-left:10px;
+}
+/**********************注册样式**************************/
+.register-wrap{
+	/* border:1px solid red; */
+}
+.register-wrap>div{
+	margin-top:10px;
+}
+.register-wrap>div span{
+	display: inline-block;
+	width:70px;
+	font-size: 14px;
+	font-weight: weight;
+	text-align: right;
+	line-height: 35px;
+}
+.register-wrap>div input{
+	width:280px;
+	height:40px;
+	border: 1px solid #ccc;
+	box-sizing: border-box;
+	padding-left: 10px;
+	outline: none;
+}
+.register-wrap>div input.code{
+	width:150px;
+}
+.register-code{
+	overflow: hidden;
+}
+.register-code span,.register-code input,.register-code img{
+	float:left;
+}
+.register-code input{
+	margin-left:4px;
+}
+.register-code img{
+	height:40px;
+	margin-left:15px;
+}
+.register-submit{
+	width: 279px;
+	height:42px;
+	background: #fc9153;
+	border:none;
+	font-size: 16px;
+	text-align: center;
+	line-height: 42px;
+	color:#fff;
+	letter-spacing: 5px;
+	margin-top:10px;
+	padding-left:5px;
+	margin-left: 73px;
+}
+.register-other{
+	width: 359px;
+	overflow: hidden;
+}
+.register-other a{
+	float:right;
+	display: inline-block;
+	line-height: 25px;
+	color:#2e82ff;
+	font-size: 12px;
+	margin-left:10px;
+}

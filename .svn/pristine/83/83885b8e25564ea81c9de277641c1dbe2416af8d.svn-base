@@ -1,0 +1,97 @@
+/*var time_stamp = new Date().getTime();
+	var params = {
+		body:{
+			userAccount:"luozurong",
+			password:"888888"
+		},
+		header:{
+			token:"00",
+			time_stamp:time_stamp
+		}
+	}
+    var paramsStr = encodeURI(JSON.stringify(params));
+    //var paramsStr = JSON.stringify(params);
+    console.log(paramsStr);
+	$.ajax({
+		url:"http://192.168.51.24:8090//lxjsdkApi/login?str="+paramsStr,
+		dataType: "jsonp",
+        jsonp: "jsoncallback",
+        jsonpCallback: "success_jsonpCallback",
+        contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		success:function(data){
+			console.log(data);
+		}
+	})*/
+
+
+
+/*function registerAjax(){
+	var time_stamp = new Date().getTime();
+	var params = {
+		body:{
+			userAccount:"luozurong"
+		},
+		header:{
+			token:"00",
+			time_stamp:time_stamp
+		}
+	}
+    var paramsStr = encodeURI(JSON.stringify(params));
+    //var paramsStr = JSON.stringify(params);
+    console.log(paramsStr);
+	$.ajax({
+		url:"http://192.168.51.24:8090//lxjsdkApi/validateUser?str="+paramsStr,
+		dataType: "jsonp",
+        jsonp: "jsoncallback",
+        jsonpCallback: "success_jsonpCallback",
+        contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+		success:function(data){
+			console.log(data);
+		}
+	})
+}
+registerAjax();*/
+var vue = new Vue({
+    el: "#login",
+    data: {
+        userAccount:"luozurong",
+		password:"888888",
+		userFlag: false,
+		mobileFlagWord: "请输入用户名",
+		pswFlag: false,
+		pswFlagWord: "请输入密码"
+    },
+    methods:{
+    	loginSubmit(){
+    		var params = {
+				body:{
+					userAccount:this.userAccount,
+					password:this.password
+				},
+				header:{
+					token: this.token,
+					time_stamp: this.time_stamp
+				}
+			}
+		    var paramsStr = encodeURI(JSON.stringify(params));
+			var httpURL = this.host+"/lxjsdkApi/login?str="+paramsStr;
+			this.$http.jsonp(httpURL,{
+			    emulateJSON: true,
+				method: "get",
+				dataType: "jsonp",
+				jsonp: "jsoncallback",
+		        contentType:'application/x-www-form-urlencoded; charset=UTF-8',
+			}).then(function(res){  
+            	this.registedFlag = res.body.registed;
+            },function(res){  
+                console.log(res);  
+            });
+    	},
+    	isCondition(param) {
+			if(param == null || param == "" || param == undefined) {
+				return true;
+			}
+			return false;
+		}
+    }
+});

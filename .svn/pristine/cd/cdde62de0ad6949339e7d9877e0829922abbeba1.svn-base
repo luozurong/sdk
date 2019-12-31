@@ -1,0 +1,43 @@
+ 
+var vue = new Vue({
+    el: "#indexWrap",
+    data: {
+    	loginBeforeFlag: true,
+        loginAfterFlag: false,
+        sesstionUser:"",
+    },
+    methods:{
+    	sessionStorageFunc(){
+    		if(this.isCondition(sessionStorage.getItem("userStorage"))){
+    			this.loginBeforeFlag = true;
+    			this.loginAfterFlag = false;
+    			console.log(sessionStorage.getItem("userStorage"));
+    		}else{
+    			this.loginBeforeFlag = false;
+    			this.loginAfterFlag = true;
+    			this.sesstionUser = sessionStorage.getItem("userStorage");
+    		}
+    	},
+    	noLogin(){
+    		setTimeout(function(){
+    			sessionStorage.setItem("userStorage","");
+    			vue.loginBeforeFlag = true;
+    		    vue.loginAfterFlag = false;
+    		},300);
+    	},
+    	isCondition(param) {
+			if(param == null || param == "" || param == undefined) {
+				return true;
+			}
+			return false;
+		}
+    },
+    mounted(){
+    	var mySwiper = new Swiper ('.swiper-container', {
+		    loop: true,  
+		    autoplay: 3000,
+		    pagination: '.swiper-pagination'
+		}); 
+		this.sessionStorageFunc();
+    }
+});

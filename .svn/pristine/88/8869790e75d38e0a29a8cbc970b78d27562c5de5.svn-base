@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>文档中心</title>
+		<link rel="stylesheet" href="css/docCenter.css">
+	</head>
+	<body>
+		<div class="apply-header">
+			<img src="../joint/img/AA.png" alt="">
+			<span class="apply-name">小菜鸟开发员</span>
+			<span class="apply-edit">编辑账户</span>
+		</div>
+		<div class="apply-content">
+			<div class="docCenter-aside">
+				<div class="applay-title">文档中心</div>
+				<div class="docCenter-doc">
+					<div class="docCenter-item">
+						<div>
+							<i class="docCenter-icon"></i>
+							<span>我的应用</span>
+						</div>
+						<ul>
+							<li><a href="javascript:;">我的应用概况</a></li>
+							<li><a href="javascript:;">我的应用详情</a></li>
+						</ul>
+					</div>
+					<div class="docCenter-item">
+						<div>
+							<i class="docCenter-icon"></i>
+							<span>文档</span>
+						</div>
+						<ul>
+							<li><a href="javascript:;">我的平台概况</a></li>
+							<li><a href="javascript:;">我的平台详情</a></li>
+						</ul>
+					</div>
+					<div class="docCenter-one">
+						<a href="javascript:;">联系我们</a>
+					</div>
+				</div>
+			</div>
+			<div class="docCenter-content">
+				束带结发数据发
+			</div>
+		</div>
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="js/docCenter.js"></script>
+	</body>
+</html>

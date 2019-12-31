@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+		<title>联享家开放平台</title>
+		<link rel="stylesheet" href="../common/swiper/swiper-3.4.2.min.css">
+		<link rel="stylesheet" href="css/index.css">
+		<script src="../common/vue/vue.min.js"></script>
+		<script src="../common/vue/vue-resource.min.js"></script>
+	</head>
+	<body>
+		<div class="index-link">
+			<div>
+				<div class="logo">
+					<img src="../common/img/logo.png" alt="logo">
+					<span>联享家开发平台</span>
+				</div>
+				<div class="index-nav">
+					<div class="index-nav-login" id="indexWrap" v-cloak>
+						<div v-if="loginBeforeFlag">
+							<a class="login" href="login.html">登录</a>
+							<span>|</span> 
+							<a class="register" href="register.html">注册</a>
+						</div>
+						<div v-if="loginAfterFlag">
+							<a>{{sesstionUser}}</a>
+							<span>|</span> 
+							<a @click="noLogin()">退出登录</a>
+						</div>
+					</div>
+					<div class="index-nav-warp">
+						<a href="../joint/apply.html">应用管理</a>	
+						<a href="../docCenter/docCenter.html">文档</a>	
+						<a href="javascript:;">联系我们</a>
+					</div>
+				</div>
+			</div>			
+		</div>
+		<div class="swiper-container">
+		    <div class="swiper-wrapper">
+		        <div class="swiper-slide" style="background:url(img/banner1.jpg) no-repeat center; background-size: cover"></div>
+		        <div class="swiper-slide" style="background:url(img/banner2.jpg) no-repeat center; background-size: cover"></div>
+		        <div class="swiper-slide" style="background:url(img/banner3.jpg) no-repeat center; background-size: cover"></div>
+		    </div>
+		    <div class="swiper-pagination"></div>
+		</div>
+		<div class="index-wrap">
+			<div>
+				<p class="wrap-word1">应用商城</p>
+				<div>
+					<img src="img/btn_ic_shop@3x.png" alt="">
+					<p class="wrap-work-key">商品超市</p>
+					<p>移动的超市</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_ic_service@3x.png" alt="">
+					<p class="wrap-work-key">服务到家</p>
+					<p>生活中的小管家</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/tab_btn_ic_life_nor@3x.png" alt="">
+					<p class="wrap-work-key">享生活</p>
+					<p>享受生活的乐趣</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/tab_btn_ic_message_nor@3x.png" alt="">
+					<p class="wrap-work-key">我的圈子</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+			</div>
+			<div class="wrap-floor2">
+				<p class="wrap-word2">联享家服务</p>
+				<div>
+					<img src="img/ic_house@3x.png" alt="">
+					<p class="wrap-work-key">住房管理</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/ic_household@3x.png" alt="">
+					<p class="wrap-work-key">住户管理</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_real-time-protection@3x.png" alt="">
+					<p class="wrap-work-key">实时监控</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_ic_property-payment@3x.png" alt="">
+					<p class="wrap-work-key">物业缴费</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+			</div>
+			<div>
+				<p class="wrap-word3">联享家账号</p>
+				<div>
+					<img src="img/ic_phone@3x.png" alt="">
+					<p class="wrap-work-key">接入简单</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_ic_neighbor@3x.png" alt="">
+					<p class="wrap-work-key">资源丰富</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_ic_Family-machine@3x.png" alt="">
+					<p class="wrap-work-key">账号安全</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+				<div>
+					<img src="img/btn_ic_talkback-record@3x.png" alt="">
+					<p class="wrap-work-key">快速登录</p>
+					<p>非常平台</p>
+					<p>非常好的开发平台</p>
+				</div>
+			</div>
+		</div>
+		<div class="index-container">
+			<div>
+				<img src="img/duo.png" alt="">
+			</div>
+			<div class="container-word">
+				<div class="container-app">联享家</div>
+				<div class="container-app-word">手机开门 便捷生活</div>
+				<div class="container-app-word">专业提供智慧社区解决方案</div>
+			</div>
+		</div>
+		<div class="index-footer">
+			<div>
+				<div class="footer-floor1">
+					<div>
+						<div class="footer-floor-key">帮助和文档</div>
+						<div><a href="javascript:;">文档中心</a></div>
+						<div><a href="javascript:;">如何成为开发者</a></div>
+					</div>
+					<div>
+						<div class="footer-floor-key">联系我们</div>
+						<div><a href="javascript:;">联系方式</a></div>
+						<div><a href="javascript:;">微信公众号</a></div>
+					</div>
+				</div>
+				<div class="footer-floor2">©2017 广州合立正通信息科技有限公司</div>
+			</div>
+		</div>
+		<script src="../common/js/jquery-2.1.4.js"></script>
+		<script src="../common/swiper/swiper.min.js"></script>
+		<script src="js/index.js"></script>
+	</body>
+</html>

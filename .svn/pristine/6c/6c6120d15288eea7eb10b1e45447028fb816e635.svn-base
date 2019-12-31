@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,maximum-scale=1,user-scalable=no">
+    <title>找回密码</title>
+    <link rel="stylesheet" href="css/retrievePassword.css"/>
+</head>
+<body>
+<div class="index-link">
+    <div>
+        <div class="logo">
+            <img src="../common/img/logo.png" alt="logo">
+            <span>联享家开发平台</span>
+        </div>
+        <div class="index-nav">
+            <div class="index-nav-login">
+                <a class="login" href="login.html">登录</a>
+                <span>|</span>
+                <a class="register" href="register.html">注册</a>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="password_top">
+        <!--<img class="password_img" src="../common/img/logo.png" alt="logo">-->
+        <div class="password_text">找回密码</div>
+</div>
+<div class="content">
+    <!--<div class="content_top">-->
+        <!--<ul class="content_nav">-->
+            <!--&lt;!&ndash;<li>确认账号</li>&ndash;&gt;-->
+            <!--<li>安全验证</li>-->
+            <!--&lt;!&ndash;<li>重置密码</li>&ndash;&gt;-->
+        <!--</ul>-->
+
+    <!--</div>-->
+    
+    <form action="">
+        <div class="nav_text">
+            <p>请填写您需要找回的帐号</p>
+        </div>
+        <div class="nav_iphone">
+            <input placeholder="请输入你的手机号码" class="pass_input" type="text" name="username"/>
+            <!--<label class="import_iphone">请输入你的手机号码</label>-->
+        </div>
+        <div class="nav_auth" style="padding-bottom:30px;padding-top:30px;clear: both">
+            <input placeholder="请输入验证码" class="pass_input pass_security" type="text" name=""/>
+            <!--<label class="import_iphone">请输入验证码</label>-->
+            <img class="pass_img" src="" alt=""/>
+            <a href="#" class="pass_a">换一张</a>
+        </div>
+        <div class="nav_submit">
+            <input type="submit" name="" value="完成" class="pass_button" id="submit">
+        </div>
+    </form>
+    <!--<form action="">-->
+        <!--<div class="nav_text">-->
+            <!--<p>为了你的帐号安全，请完成身份验证</p>-->
+            <!--<p class="verify-method">验证方式：</p>-->
+        <!--</div>-->
+        <!--<div class="select-question"></div>-->
+        <!--<div style="padding-bottom:30px;padding-top:30px;clear: both">-->
+            <!--<input placeholder="请输入验证码" class="pass_input pass_security" type="text" name=""/>-->
+            <!--&lt;!&ndash;<label class="import_iphone">请输入验证码</label>&ndash;&gt;-->
+            <!--<div class="pass_button_timer" id="pass-button-new1">发送验证码</div>-->
+        <!--</div>-->
+        <!--<div>-->
+            <!--<input type="submit" name="" value="下一步" class="pass_button" id="submit">-->
+        <!--</div>-->
+    <!--</form>-->
+</div>
+</body>
+</html>
